@@ -19,4 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('secure/', include('apps.secure.urls')),
+    path('vulnerable/', include('apps.vulnerable.urls')),
 ]
