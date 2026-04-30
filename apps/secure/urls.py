@@ -7,4 +7,5 @@ from . import views
 app_name = "secure"
 urlpatterns = [
     #path(...)
+    path("", views.index, name="index"),
 ]
