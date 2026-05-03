@@ -28,4 +28,4 @@ def login_view(request: HttpRequest):
 
 def logout_view(request: HttpRequest):
     logout(request)
-    redirect("index")
+    return redirect("index")
