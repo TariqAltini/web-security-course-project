@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
+from django.views.decorators.http import require_POST
+from django.contrib import messages
 
 from .models import Product, CartItems
 
@@ -29,3 +31,40 @@ def login_view(request: HttpRequest):
 def logout_view(request: HttpRequest):
     logout(request)
     return redirect("index")
+
+
+def product_details(request: HttpRequest, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, "product.html", context={"product": product})
+
+
+@login_required
+def cart(request: HttpRequest):
+    cart_items = CartItems.objects.filter(user=request.user)
+    context = {"cart_items": cart_items}
+    render(request, "secure/cart.html", context=context)
+
+
+@login_required
+@require_POST
+def add_to_cart(request: HttpRequest, product_id):
+    # get parameters
+    product = get_object_or_404(Product, id=product_id)
+    quantity = int(request.POST.get("quantity", 1))
+
+    # Check the quantity for security
+    if quantity <= 0:
+        messages.error(request, "Quantity cant be less than 1")
+        return redirect("product_details", product_id=product_id)
+
+    # add item to cart and increment if already in cart
+    try:
+        cart_item = CartItems.objects.get(user=request.user, product=product)
+        cart_item.quantity += quantity
+        cart_item.save()
+    except CartItems.DoesNotExist:
+        cart_item = CartItems(user=request.user, product=product, quantity=quantity)
+        cart_item.save()
+        
+    messages.success(request, "Product has been added to cart")
+    return redirect("product_details", product_id=product_id)
