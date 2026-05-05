@@ -35,7 +35,7 @@ def logout_view(request: HttpRequest):
 
 def product_details(request: HttpRequest, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, "product.html", context={"product": product})
+    return render(request, "secure/product.html", context={"product": product})
 
 
 @login_required
