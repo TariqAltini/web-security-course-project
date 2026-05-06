@@ -22,12 +22,13 @@ def login_view(request: HttpRequest):
 
         if user is not None:
             login(request, user)
-            return redirect("index")
+            return redirect("secure:index")
         else:
             return render(request, "secure/login.html", {"error": "Invalid credentials"})
         
     return render(request, "secure/login.html")
 
+@login_required(login_url="secure/login")
 def logout_view(request: HttpRequest):
     logout(request)
     return redirect("index")
@@ -38,14 +39,14 @@ def product_details(request: HttpRequest, product_id):
     return render(request, "secure/product.html", context={"product": product})
 
 
-@login_required
+@login_required(login_url="/secure/login")
 def cart(request: HttpRequest):
     cart_items = CartItems.objects.filter(user=request.user)
     context = {"cart_items": cart_items}
-    render(request, "secure/cart.html", context=context)
+    return render(request, "secure/cart.html", context=context)
 
 
-@login_required
+@login_required(login_url="/secure/login")
 @require_POST
 def add_to_cart(request: HttpRequest, product_id):
     # get parameters
