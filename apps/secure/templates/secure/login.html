@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --clr-bg:        #f7f5f2;
+      --clr-surface:   #ffffff;
+      --clr-ink:       #1a1714;
+      --clr-muted:     #7a746c;
+      --clr-accent:    #c8a96e;
+      --clr-accent-dk: #a8883f;
+      --clr-border:    #e2ddd8;
+      --clr-admin:     #b34040;
+      --ff-display: 'Cormorant Garamond', Georgia, serif;
+      --ff-body:    'Barlow', sans-serif;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-sm:  0 2px 12px rgba(26,23,20,0.07);
+      --shadow-md:  0 8px 32px rgba(26,23,20,0.12);
+      --radius:     2px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--clr-bg);
+      color: var(--clr-ink);
+      font-family: var(--ff-body);
+      font-weight: 300;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    ul { list-style: none; }
+    a  { text-decoration: none; color: inherit; }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem; height: 64px;
+      background: var(--clr-surface);
+      border-bottom: 1px solid var(--clr-border);
+      box-shadow: var(--shadow-sm);
+    }
+    .logo-text {
+      font-family: var(--ff-display); font-size: 1.7rem;
+      font-weight: 600; letter-spacing: 0.18em; color: var(--clr-ink);
+    }
+    .navbar__links { display: flex; align-items: center; gap: 2.2rem; }
+    .nav-link {
+      font-family: var(--ff-body); font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.12em; color: var(--clr-muted);
+      position: relative; transition: color var(--transition);
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--clr-accent);
+      transition: width var(--transition);
+    }
+    .nav-link:hover { color: var(--clr-ink); }
+    .nav-link:hover::after { width: 100%; }
+    .cart-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; background: var(--clr-accent);
+      color: var(--clr-surface); font-size: 0.6rem; font-weight: 600;
+      border-radius: 50%; margin-left: 3px; vertical-align: middle;
+    }
+    .nav-link--admin {
+      color: var(--clr-admin); border: 1px solid var(--clr-admin);
+      padding: 4px 10px; border-radius: var(--radius);
+      font-size: 0.68rem; letter-spacing: 0.14em;
+    }
+    .nav-link--admin::after { display: none; }
+    .nav-link--admin:hover { color: var(--clr-surface); background: var(--clr-admin); }
+    .navbar__mobile-toggle {
+      display: none; background: none; border: none;
+      font-size: 1.4rem; cursor: pointer; color: var(--clr-ink);
+    }
+
+    /* HERO STRIP */
+    .hero-strip {
+      background: var(--clr-ink); color: var(--clr-accent);
+      text-align: center; padding: 10px;
+      font-family: var(--ff-body); font-size: 0.7rem;
+      font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase;
+    }
+
+    /* LOGIN LAYOUT */
+    .login-wrap {
+      min-height: calc(100vh - 90px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Left panel — decorative */
+    .login-panel {
+      background: var(--clr-ink);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem;
+    }
+    .login-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=900&q=80') center/cover no-repeat;
+      opacity: 0.18;
+    }
+    .panel-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .panel-logo {
+      font-family: var(--ff-display);
+      font-size: 3.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: var(--clr-surface);
+      margin-bottom: 1.2rem;
+    }
+    .panel-tagline {
+      font-family: var(--ff-display);
+      font-size: 1.15rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--clr-accent);
+      letter-spacing: 0.08em;
+      line-height: 1.7;
+      max-width: 300px;
+    }
+    .panel-divider {
+      width: 40px; height: 1px;
+      background: var(--clr-accent);
+      margin: 2rem auto;
+      opacity: 0.6;
+    }
+    .panel-note {
+      font-family: var(--ff-body);
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* Right panel — form */
+    .login-form-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 3rem;
+      background: var(--clr-bg);
+    }
+    .login-form-inner {
+      width: 100%;
+      max-width: 380px;
+    }
+    .form-heading {
+      font-family: var(--ff-display);
+      font-size: 2.4rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--clr-ink);
+      margin-bottom: 0.4rem;
+    }
+    .form-subheading {
+      font-size: 0.78rem;
+      color: var(--clr-muted);
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      margin-bottom: 2.8rem;
+    }
+
+    /* Field */
+    .field {
+      margin-bottom: 1.6rem;
+    }
+    .field label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--clr-muted);
+      margin-bottom: 0.5rem;
+    }
+    .field input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      font-family: var(--ff-body);
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--clr-ink);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .field input::placeholder { color: #bbb8b4; }
+    .field input:focus {
+      border-color: var(--clr-accent);
+      box-shadow: 0 0 0 3px rgba(200,169,110,0.12);
+    }
+
+    /* Row */
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--clr-muted);
+      cursor: pointer;
+    }
+    .remember-label input[type="checkbox"] {
+      accent-color: var(--clr-accent);
+      width: 13px; height: 13px;
+    }
+    .forgot-link {
+      font-size: 0.72rem;
+      color: var(--clr-accent-dk);
+      letter-spacing: 0.06em;
+      transition: color var(--transition);
+    }
+    .forgot-link:hover { color: var(--clr-accent); }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--clr-ink);
+      color: var(--clr-surface);
+      border: 1px solid var(--clr-ink);
+      border-radius: var(--radius);
+      font-family: var(--ff-body);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+      margin-bottom: 1.2rem;
+    }
+    .btn-submit:hover {
+      background: var(--clr-accent);
+      border-color: var(--clr-accent);
+    }
+    .btn-submit:active { transform: scale(0.98); }
+
+    .divider-or {
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      color: var(--clr-muted); margin-bottom: 1.2rem;
+    }
+    .divider-or::before, .divider-or::after {
+      content: ''; flex: 1; height: 1px; background: var(--clr-border);
+    }
+
+    .btn-guest {
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: var(--clr-ink);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      font-family: var(--ff-body);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition);
+      margin-bottom: 2rem;
+    }
+    .btn-guest:hover { border-color: var(--clr-accent); color: var(--clr-accent-dk); }
+
+    .form-footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--clr-muted);
+    }
+    .form-footer a {
+      color: var(--clr-accent-dk);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color var(--transition);
+    }
+    .form-footer a:hover { color: var(--clr-accent); }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .login-wrap { grid-template-columns: 1fr; }
+      .login-panel { display: none; }
+      .login-form-wrap { padding: 3rem 1.5rem; }
+      .navbar { padding: 0 1.2rem; }
+      .navbar__links { display: none; }
+      .navbar__mobile-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="navbar__logo">
+      <a href="index.html"><span class="logo-text">MAISON</span></a>
+    </div>
+    <nav class="navbar__links">
+      <a href="index.html" class="nav-link">SHOP</a>
+      <a href="cart.html" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="login.html" class="nav-link">ACCOUNT</a>
+      <a href="#" class="nav-link">PAYMENT</a>
+      <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+    </nav>
+    <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <div class="hero-strip">
+    <p>New Collection — Spring / Summer 2026</p>
+  </div>
+
+  <div class="login-wrap">
+
+    <!-- Decorative Left -->
+    <div class="login-panel">
+      <div class="panel-content">
+        <div class="panel-logo">MAISON</div>
+        <div class="panel-divider"></div>
+        <p class="panel-tagline">Curated objects for the discerning eye.</p>
+        <div class="panel-divider"></div>
+        <p class="panel-note">Members enjoy exclusive access</p>
+      </div>
+    </div>
+
+    <!-- Form Right -->
+    <div class="login-form-wrap">
+      <div class="login-form-inner">
+        <h1 class="form-heading">Welcome back.</h1>
+        <p class="form-subheading">Sign in to your MAISON account</p>
+
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <div class="field-row">
+          <label class="remember-label">
+            <input type="checkbox" /> Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button class="btn-submit" onclick="handleLogin(this)">Sign In →</button>
+
+        <div class="divider-or">or</div>
+
+        <button class="btn-guest" onclick="window.location.href='index.html'">Continue as Guest</button>
+
+        <p class="form-footer">
+          New to MAISON? <a href="#">Create an account</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function handleLogin(btn) {
+      const email = document.getElementById('email').value;
+      const pass  = document.getElementById('password').value;
+      if (!email || !pass) {
+        btn.textContent = 'Please fill all fields';
+        btn.style.background = '#b34040';
+        btn.style.borderColor = '#b34040';
+        setTimeout(() => {
+          btn.textContent = 'Sign In →';
+          btn.style.background = '';
+          btn.style.borderColor = '';
+        }, 2000);
+        return;
+      }
+      btn.textContent = 'Signing in…';
+      btn.disabled = true;
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    }
+
+    // Mobile menu
+    const toggle = document.querySelector('.navbar__mobile-toggle');
+    const links  = document.querySelector('.navbar__links');
+    if (toggle && links) {
+      toggle.addEventListener('click', () => {
+        links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+      });
+    }
+  </script>
+</body>
+</html>
