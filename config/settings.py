@@ -30,16 +30,21 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+CUSTOM_APPS = [
+    'apps.secure.apps.SecureConfig',
+    'apps.vulnerable.apps.VulnerableConfig',
+]
+
+INTERNAL_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.secure.apps.SecureConfig',
-    'apps.vulnerable.apps.VulnerableConfig',
 ]
+
+INSTALLED_APPS = INTERNAL_APPS + CUSTOM_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,10 +80,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "default.sqlite3"
+    },  # unused / empty router catches accidents
+    "secure_db": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "secure.sqlite3",
+    },
+    "vulnerable_db": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "vulnerable.sqlite3",
+    },
 }
 
 
@@ -130,3 +143,5 @@ MEDIA_URL = "/media/"
 FIXTURE_DIRS = [
     BASE_DIR / "fixtures",
 ]
+
+DATABASE_ROUTERS = ["db_router.AppRouter"]
