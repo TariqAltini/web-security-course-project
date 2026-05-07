@@ -1,0 +1,102 @@
+[
+    {
+        "model": "secure.shopuser",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$uCUYhJ2WtWFBWDPV43I8fJ$myUSVpNQ5Kai6jbJo9aitF6UDcm87S52l75WDtCkl0s=",
+            "last_login": "2026-04-29T16:26:18.073Z",
+            "is_superuser": true,
+            "username": "labadmin",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2026-04-29T16:25:32.763Z",
+            "role": null,
+            "store_credit": "0.00",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "secure.shopuser",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$HYySAA1mn4KAEmxKrtb1JU$962dxWTzxP0OBNj2bvdDiPQggsXzfs4WNTwFWuuRogY=",
+            "last_login": "2026-04-29T16:26:18.073Z",
+            "is_superuser": false,
+            "username": "administrator",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2026-04-29T16:25:32.763Z",
+            "role": 1,
+            "store_credit": "100.00",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "secure.shopuser",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$NNsIxiISjAheKCD6pkNkWO$54rF9TFv6pw0DSNTJLcfNpTNYAOiB9z+BT31CuGGxow=",
+            "last_login": "2026-04-29T16:26:18.073Z",
+            "is_superuser": false,
+            "username": "wiener",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2026-04-29T16:25:32.763Z",
+            "role": 2,
+            "store_credit": "100.00",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "secure.shopuser",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$1200000$ImxoyHzxDiIMMsqeuPU1Kb$Rd4kkTr+laNFOM7u8rAM1evKbXOChf50dqq3H+cUVx0=",
+            "last_login": "2026-04-29T16:26:18.073Z",
+            "is_superuser": false,
+            "username": "carlos",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2026-04-29T16:25:32.763Z",
+            "role": 2,
+            "store_credit": "100.00",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "secure.product",
+        "pk": 2,
+        "fields": {
+            "name": "cozy coat",
+            "price": "19.99",
+            "stock": 100,
+            "image": "product-image/coat_img.webp"
+        }
+    },
+    {
+        "model": "secure.product",
+        "pk": 3,
+        "fields": {
+            "name": "Black T-Shirt",
+            "price": "15.99",
+            "stock": 100,
+            "image": "product-image/coat_img.webp"
+        }
+    }
+]
