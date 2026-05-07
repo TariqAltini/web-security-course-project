@@ -46,7 +46,8 @@ python manage.py runserver
 
 and then visit http://127.0.0.1:8000/secure/ in your browser. You should the see the websites landing page. There shouldn't be any errors.
 
-8. Fill the database by running this command
+8. Fill the database by running these two commands:
 ```
-python ./manage.py loaddata sample.json
+python ./manage.py loaddata --database secure_db secure-sample.json
+python ./manage.py loaddata --database vulnerable_db vulnerable-sample.json
 ```
