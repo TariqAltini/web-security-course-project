@@ -26,7 +26,7 @@ class Product(models.Model):
     name = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     stock = models.IntegerField()
-    image = models.ImageField(upload_to="product-image/", blank=True, null=True)
+    image = models.ImageField(upload_to="product-image/", blank=True, null=True, default="product-image/coat_img.webp")
     
     class Meta:
         app_label="secure"
