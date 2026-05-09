@@ -5,7 +5,7 @@ from django.http import HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 
-from .models import Product, CartItems
+from .models import Product, CartItems, ShopUser
 
 # Create your views here.
 def index(request: HttpRequest):
@@ -69,3 +69,16 @@ def add_to_cart(request: HttpRequest, product_id):
         
     messages.success(request, "Product has been added to cart")
     return redirect("product_details", product_id=product_id)
+
+
+@login_required(login_url="/secure/login")
+def admin_panel(request: HttpRequest):
+    
+    # Check user role for security
+    if request.user.role == 1:
+        context = {
+            "users": ShopUser.objects.all()
+        }
+        return render(request, "secure/admin-panel.html", context)
+    
+    return redirect("index")
