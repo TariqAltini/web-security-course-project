@@ -33,7 +33,7 @@ def login_view(request: HttpRequest):
 @login_required(login_url=LOGIN_URL)
 def logout_view(request: HttpRequest):
     logout(request)
-    return redirect("index")
+    return redirect("vulnerable:index")
 
 
 def product_details(request: HttpRequest, product_id):
@@ -68,7 +68,7 @@ def add_to_cart(request: HttpRequest, product_id):
         cart_item.save()
         
     messages.success(request, "Product has been added to cart")
-    return redirect("product_details", product_id=product_id)
+    return redirect("vulnerable:product_details", product_id=product_id)
 
 
 @login_required(login_url=LOGIN_URL)
@@ -81,4 +81,4 @@ def admin_panel(request: HttpRequest):
         }
         return render(request, "secure/admin-panel.html", context)
     
-    return redirect("index")
+    return redirect("vulnerable:index")
