@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from .models import Product, CartItems, ShopUser
 
-LOGIN_URL = "/vulnerable/login"
+LOGIN_URL = "/vulnerable/login/"
 
 # Create your views here.
 def index(request: HttpRequest):
