@@ -7,6 +7,8 @@ from django.contrib import messages
 
 from .models import Product, CartItems, ShopUser
 
+LOGIN_URL = "/secure/login"
+
 # Create your views here.
 def index(request: HttpRequest):
     products = Product.objects.all()
@@ -28,7 +30,7 @@ def login_view(request: HttpRequest):
         
     return render(request, "secure/login.html")
 
-@login_required(login_url="secure/login")
+@login_required(login_url=LOGIN_URL)
 def logout_view(request: HttpRequest):
     logout(request)
     return redirect("index")
@@ -39,14 +41,14 @@ def product_details(request: HttpRequest, product_id):
     return render(request, "secure/product.html", context={"product": product})
 
 
-@login_required(login_url="/secure/login")
+@login_required(login_url=LOGIN_URL)
 def cart(request: HttpRequest):
     cart_items = CartItems.objects.filter(user=request.user)
     context = {"cart_items": cart_items}
     return render(request, "secure/cart.html", context=context)
 
 
-@login_required(login_url="/secure/login")
+@login_required(login_url=LOGIN_URL)
 @require_POST
 def add_to_cart(request: HttpRequest, product_id):
     # get parameters
@@ -71,7 +73,7 @@ def add_to_cart(request: HttpRequest, product_id):
     return redirect("product_details", product_id=product_id)
 
 
-@login_required(login_url="/secure/login")
+@login_required(login_url=LOGIN_URL)
 def admin_panel(request: HttpRequest):
     
     # Check user role for security
