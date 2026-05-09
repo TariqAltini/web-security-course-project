@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="navbar__logo">
+      <span class="logo-text">MAISON</span>
+    </div>
+    <nav class="navbar__links">
+      <a href="#" class="nav-link">SHOP</a>
+      <a href="#" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="#" class="nav-link">ACCOUNT</a>
+      <a href="#" class="nav-link">PAYMENT</a>
+      <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+    </nav>
+    <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <p>New Collection — Spring / Summer 2026</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <div class="section-header">
+      <h1 class="section-title">Featured Products</h1>
+      <div class="section-line"></div>
+    </div>
+
+    <!-- PRODUCT LIST -->
+    <ul class="product-list">
+
+      <!-- PRODUCT CARD -->
+      {% for product in products%}
+      <li class="product-card">
+        <div class="product-card__image-wrap">
+          <img
+            src="{{ product.image.url }}"
+            class="product-card__image"
+          />
+          <div class="product-card__overlay">
+            <span class="overlay-label">View Details</span>
+          </div>
+          <div class="product-card__badge">New</div>
+        </div>
+
+        <div class="product-card__info">
+          <div class="product-card__meta">
+            <span class="product-card__category">Accessories</span>
+          </div>
+          <h2 class="product-card__name">{{ product.name }}</h2>
+          <div class="product-card__footer">
+            <span class="product-card__price">${{ product.price }}</span>
+            <button class="quick-buy-btn" onclick="handleQuickBuy(this)">
+              <span class="btn-text">Quick Buy</span>
+              <span class="btn-icon">→</span>
+            </button>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+
+    </ul>
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span class="toast-msg">Added to cart!</span>
+  </div>
+
+  <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>
