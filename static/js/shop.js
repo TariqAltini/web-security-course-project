@@ -4,53 +4,66 @@
    ============================================================ */
 
 /* ----------------------------------------------------------
-   CART STATE  (localStorage-backed)
-   Structure: [{ id, name, price, image, qty }, ...]
+   CSRF helper — reads Django's csrftoken cookie
    ---------------------------------------------------------- */
-const CART_KEY = 'maison_cart';
-
-function getCart() {
-  try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
-  catch { return []; }
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : '';
 }
 
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  syncCartCount();
-}
+/* ----------------------------------------------------------
+   ADD TO CART — POST to Django backend
+   POST /cart/add/<product_id>/  with field: quantity
+   The view redirects back to the product page on success,
+   so for quick-buy on the shop page we use fetch() to stay
+   on the page and just show a toast instead.
+   ---------------------------------------------------------- */
+function postAddToCart(productId, quantity, { redirect = false } = {}) {
+  const url = `/cart/add/${productId}/`;
 
-function addToCart(item) {
-  const cart = getCart();
-  const existing = cart.find(i => i.id === item.id);
-  if (existing) {
-    existing.qty += item.qty;
-  } else {
-    cart.push(item);
+  if (redirect) {
+    // Let the browser follow the view's redirect naturally (product page form submit)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+
+    const csrfInput = document.createElement('input');
+    csrfInput.type  = 'hidden';
+    csrfInput.name  = 'csrfmiddlewaretoken';
+    csrfInput.value = getCsrfToken();
+
+    const qtyInput = document.createElement('input');
+    qtyInput.type  = 'hidden';
+    qtyInput.name  = 'quantity';
+    qtyInput.value = quantity;
+
+    form.appendChild(csrfInput);
+    form.appendChild(qtyInput);
+    document.body.appendChild(form);
+    form.submit();
+    return;
   }
-  saveCart(cart);
+
+  // fetch() — stay on page (shop quick-buy)
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `quantity=${quantity}`,
+    credentials: 'same-origin',
+  });
 }
 
-function removeFromCart(id) {
-  saveCart(getCart().filter(i => i.id !== id));
-}
-
-function updateQty(id, qty) {
-  const cart = getCart();
-  const item = cart.find(i => i.id === id);
-  if (item) {
-    item.qty = Math.max(1, qty);
-    saveCart(cart);
-  }
-}
-
-function cartTotal() {
-  return getCart().reduce((sum, i) => sum + i.price * i.qty, 0);
-}
-
+/* ----------------------------------------------------------
+   CART COUNT — kept in a data attribute set by the template.
+   The count badge is server-rendered; bump animation only.
+   ---------------------------------------------------------- */
 function syncCartCount() {
-  const total = getCart().reduce((sum, i) => sum + i.qty, 0);
+  // No-op: count is rendered server-side.
+  // Call this after a fetch-based add to animate the badge.
   document.querySelectorAll('.cart-count').forEach(el => {
-    el.textContent = total;
     el.classList.add('bump');
     setTimeout(() => el.classList.remove('bump'), 350);
   });
@@ -83,9 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', () => links.classList.toggle('open'));
   }
 
-  // Sync count on every page load
-  syncCartCount();
-
   // Route to page init
   if (document.querySelector('.product-list')) initShopPage();
   if (document.querySelector('.product-detail')) initProductPage();
@@ -95,47 +105,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ----------------------------------------------------------
    SHOP PAGE — quick buy buttons
+   Posts to backend via fetch() so the user stays on the
+   shop page. Requires data-product-id on each .product-card.
    ---------------------------------------------------------- */
 function initShopPage() {
   document.querySelectorAll('.quick-buy-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
+    btn.addEventListener('click', async e => {
       e.stopPropagation();
-      const card = btn.closest('.product-card');
-      const name  = card.querySelector('.product-card__name').textContent.trim();
-      const price = parseFloat(card.querySelector('.product-card__price').textContent.replace('$', ''));
-      const image = card.querySelector('.product-card__image')?.src || '';
-      const id    = name.toLowerCase().replace(/\s+/g, '-');
+      const card      = btn.closest('.product-card');
+      const productId = card.dataset.productId;
 
-      addToCart({ id, name, price, image, qty: 1 });
-      showToast('Added to cart!');
+      if (!productId) {
+        console.warn('Quick Buy: missing data-product-id on .product-card');
+        return;
+      }
 
-      btn.classList.add('added');
-      btn.querySelector('.btn-text').textContent = 'Added!';
-      setTimeout(() => {
-        btn.classList.remove('added');
-        btn.querySelector('.btn-text').textContent = 'Quick Buy';
-      }, 1800);
+      btn.disabled = true;
+
+      try {
+        const res = await postAddToCart(productId, 1);
+        if (res.ok || res.redirected) {
+          showToast('Added to cart!');
+          syncCartCount();
+          btn.classList.add('added');
+          btn.querySelector('.btn-text').textContent = 'Added!';
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.querySelector('.btn-text').textContent = 'Quick Buy';
+            btn.disabled = false;
+          }, 1800);
+        } else if (res.status === 302 || res.status === 403) {
+          // Unauthenticated — redirect to login
+          window.location.href = '/secure/login';
+        } else {
+          showToast('Could not add to cart.');
+          btn.disabled = false;
+        }
+      } catch {
+        showToast('Network error.');
+        btn.disabled = false;
+      }
     });
   });
 }
 
 /* legacy inline handler still referenced in some cards */
-function handleQuickBuy(btn) {
-  const card = btn.closest('.product-card');
-  const name  = card.querySelector('.product-card__name').textContent.trim();
-  const price = parseFloat(card.querySelector('.product-card__price').textContent.replace('$', ''));
-  const image = card.querySelector('.product-card__image')?.src || '';
-  const id    = name.toLowerCase().replace(/\s+/g, '-');
+async function handleQuickBuy(btn) {
+  const card      = btn.closest('.product-card');
+  const productId = card.dataset.productId;
 
-  addToCart({ id, name, price, image, qty: 1 });
-  showToast('Added to cart!');
+  if (!productId) {
+    console.warn('Quick Buy: missing data-product-id on .product-card');
+    return;
+  }
 
-  btn.classList.add('added');
-  btn.querySelector('.btn-text').textContent = 'Added!';
-  setTimeout(() => {
-    btn.classList.remove('added');
-    btn.querySelector('.btn-text').textContent = 'Quick Buy';
-  }, 1800);
+  btn.disabled = true;
+
+  try {
+    const res = await postAddToCart(productId, 1);
+    if (res.ok || res.redirected) {
+      showToast('Added to cart!');
+      syncCartCount();
+      btn.classList.add('added');
+      btn.querySelector('.btn-text').textContent = 'Added!';
+      setTimeout(() => {
+        btn.classList.remove('added');
+        btn.querySelector('.btn-text').textContent = 'Quick Buy';
+        btn.disabled = false;
+      }, 1800);
+    } else {
+      window.location.href = '/secure/login';
+    }
+  } catch {
+    showToast('Network error.');
+    btn.disabled = false;
+  }
 }
 
 /* ----------------------------------------------------------
@@ -158,22 +202,27 @@ function initProductPage() {
 
   if (atcBtn) {
     atcBtn.addEventListener('click', () => {
-      const name  = atcBtn.dataset.name;
-      const price = parseFloat(atcBtn.dataset.price);
-      const image = atcBtn.dataset.image || '';
-      const id    = name.toLowerCase().replace(/\s+/g, '-');
-
-      addToCart({ id, name, price, image, qty });
-      showToast(`${qty > 1 ? qty + '× ' : ''}${name} added to cart!`);
-
-      atcBtn.classList.add('added');
-      atcBtn.querySelector('.btn-text').textContent = 'Added!';
-      setTimeout(() => {
-        atcBtn.classList.remove('added');
-        atcBtn.querySelector('.btn-text').textContent = 'Add to Cart';
-      }, 1800);
+      const productId = atcBtn.dataset.productId;
+      if (!productId) {
+        console.warn('Add to Cart: missing data-product-id on button');
+        return;
+      }
+      // Submit as a real form POST — view handles redirect back to product page
+      postAddToCart(productId, qty, { redirect: true });
     });
   }
+
+  // Accordion
+  document.querySelectorAll('.accordion__trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const expanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(!expanded));
+      const icon = trigger.querySelector('.accordion__icon');
+      if (icon) icon.textContent = expanded ? '+' : '−';
+      const body = trigger.nextElementSibling;
+      if (body) body.classList.toggle('accordion__body--open', !expanded);
+    });
+  });
 
   // Thumbnail switching
   document.querySelectorAll('.product-detail__thumb').forEach(thumb => {
@@ -190,88 +239,15 @@ function initProductPage() {
 
 /* ----------------------------------------------------------
    CART PAGE
+   The cart page is server-rendered by Django. JS here only
+   handles the remove / qty-change buttons if they are wired
+   to their own backend views. Toast is shown via Django
+   messages rendered into data-toast on the body tag.
    ---------------------------------------------------------- */
 function initCartPage() {
-  renderCartPage();
-}
-
-function renderCartPage() {
-  const cart       = getCart();
-  const container  = document.getElementById('cart-items');
-  const emptyState = document.getElementById('cart-empty');
-  const summary    = document.getElementById('cart-summary');
-
-  if (!container) return;
-
-  if (cart.length === 0) {
-    container.innerHTML = '';
-    if (emptyState) emptyState.style.display = 'flex';
-    if (summary)    summary.style.display    = 'none';
-    return;
-  }
-
-  if (emptyState) emptyState.style.display = 'none';
-  if (summary)    summary.style.display    = '';
-
-  container.innerHTML = cart.map(item => `
-    <div class="cart-item" data-id="${item.id}">
-      <div class="cart-item__image-wrap">
-        <img src="${item.image}" alt="${item.name}" class="cart-item__image" />
-      </div>
-      <div class="cart-item__info">
-        <div class="cart-item__meta">
-          <span class="product-card__category">Accessories</span>
-        </div>
-        <h3 class="cart-item__name">${item.name}</h3>
-        <p class="cart-item__unit-price">$${item.price.toFixed(2)} each</p>
-      </div>
-      <div class="cart-item__controls">
-        <div class="qty-selector">
-          <button class="qty-btn cart-qty-minus" data-id="${item.id}" aria-label="Decrease">−</button>
-          <span class="qty-value cart-qty-value">${item.qty}</span>
-          <button class="qty-btn cart-qty-plus"  data-id="${item.id}" aria-label="Increase">+</button>
-        </div>
-        <p class="cart-item__line-price">$${(item.price * item.qty).toFixed(2)}</p>
-        <button class="cart-item__remove" data-id="${item.id}" aria-label="Remove item">Remove</button>
-      </div>
-    </div>
-  `).join('');
-
-  // Bind controls
-  container.querySelectorAll('.cart-qty-minus').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id   = btn.dataset.id;
-      const item = getCart().find(i => i.id === id);
-      if (item && item.qty > 1) { updateQty(id, item.qty - 1); renderCartPage(); }
-      else if (item && item.qty === 1) { removeFromCart(id); showToast('Item removed.'); renderCartPage(); }
-    });
-  });
-
-  container.querySelectorAll('.cart-qty-plus').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id   = btn.dataset.id;
-      const item = getCart().find(i => i.id === id);
-      if (item) { updateQty(id, item.qty + 1); renderCartPage(); }
-    });
-  });
-
-  container.querySelectorAll('.cart-item__remove').forEach(btn => {
-    btn.addEventListener('click', () => {
-      removeFromCart(btn.dataset.id);
-      showToast('Item removed.');
-      renderCartPage();
-    });
-  });
-
-  // Update summary
-  const subtotal = cartTotal();
-  const subtotalEl = document.getElementById('summary-subtotal');
-  const totalEl    = document.getElementById('summary-total');
-  const shippingEl = document.getElementById('summary-shipping');
-
-  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-  if (shippingEl) shippingEl.textContent = subtotal >= 250 ? 'Free' : 'Calculated at checkout';
-  if (totalEl)    totalEl.textContent    = `$${subtotal.toFixed(2)}`;
+  // Show Django message as toast if present (add data-toast="{{ messages|first }}" to <body>)
+  const msg = document.body.dataset.toast;
+  if (msg) showToast(msg);
 }
 
 /* ----------------------------------------------------------
