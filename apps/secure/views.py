@@ -4,7 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import HttpResponse
+from .models import CartItems
 from .models import Product, CartItems
 
 # Create your views here.
@@ -69,3 +72,29 @@ def add_to_cart(request: HttpRequest, product_id):
         
     messages.success(request, "Product has been added to cart")
     return redirect("product_details", product_id=product_id)
+
+
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+@user_passes_test(is_admin, login_url='/secure/login/') 
+def protected_admin_panel(request):
+    users = User.objects.all()
+    user_list = "".join([f"<li>{u.username} (ID: {u.id})</li>" for u in users])
+    return HttpResponse(f"""
+        <div style="font-family: Arial; padding: 20px;">
+            <h1 style="color: #2c3e50;">🛡️ SECURE ADMIN PANEL 🛡️</h1>
+            <p>Access Granted: Welcome Admin <b>{request.user.username}</b></p>
+            <hr>
+            <h3>Registered Users List:</h3>
+            <ul>{user_list}</ul>
+        </div>
+    """)
+
+@login_required(login_url="/secure/login")
+def protected_user_cart(request):
+    # هذه الدالة التي كانت ناقصة وتسببت بالخطأ
+    cart_items = CartItems.objects.filter(user=request.user)
+    context = {"cart_items": cart_items}
+    return render(request, "secure/cart.html", context=context)
