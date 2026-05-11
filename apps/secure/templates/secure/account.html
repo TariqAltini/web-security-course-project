@@ -51,7 +51,7 @@
         <!-- Profile picture -->
         <div class="profile-image-container">
           <img
-            src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/avatar-placeholder.png' %}{% endif %}"
+            src="{{ user.avatar.url }}"
             alt="{{ user.username }}"
           />
           <form method="post" action="{% url 'secure:update_avatar' %}" enctype="multipart/form-data" id="profile-picture-form">
