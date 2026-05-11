@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="navbar__logo">
+      <a href="#"><span class="logo-text">MAISON</span></a>
+    </div>
+    <nav class="navbar__links">
+      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
+      <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="#" class="nav-link">ACCOUNT</a>
+      <a href="#" class="nav-link">PAYMENT</a>
+      <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+      <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
+    </nav>
+    <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <p>New Collection — Spring / Summer 2026</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+      <a href="#" class="breadcrumb__link">Shop</a>
+      <span class="breadcrumb__sep">—</span>
+      <span class="breadcrumb__current">{{ product.name }}</span>
+    </nav>
+
+    <!-- PRODUCT DETAIL -->
+    <div class="product-detail">
+
+      <!-- IMAGE COLUMN -->
+      <div class="product-detail__gallery">
+        <div class="product-detail__main-image-wrap">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-detail__main-image" />
+          <div class="product-card__badge">New</div>
+        </div>
+        <!-- Thumbnail strip (additional images if available) -->
+        <div class="product-detail__thumbs">
+          <div class="product-detail__thumb product-detail__thumb--active">
+            <img src="{{ product.image.url }}" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO COLUMN -->
+      <div class="product-detail__info">
+
+        <h1 class="product-detail__name">{{ product.name }}</h1>
+
+        <p class="product-detail__price">${{ product.price }}</p>
+
+        <div class="product-detail__divider"></div>
+
+        <p class="product-detail__desc">
+          {{ product.description|default:"A carefully crafted piece from our Spring / Summer 2026 collection. Made with premium materials and finished with meticulous attention to detail." }}
+        </p>
+
+        <div class="product-detail__divider"></div>
+
+        <!-- QUANTITY SELECTOR -->
+        <form method="POST" action="{% url 'secure:add_to_cart' product.id %}">
+        {% csrf_token %}
+
+          <div class="product-detail__qty-row">
+            <span class="product-detail__label">Quantity</span>
+            <div class="qty-selector">
+              <input
+                type="number"
+                name="quantity"
+                value="1"
+                min="1"
+                class="qty-value"
+                style="width: 60px; border: none; text-align: center;"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="add-to-cart-btn">
+            <span class="btn-text">Add to Cart</span>
+            <span class="btn-icon">→</span>
+          </button>
+
+        </form>
+
+        <div class="product-detail__divider"></div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span class="toast-msg">Added to cart!</span>
+  </div>
+
+  <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>

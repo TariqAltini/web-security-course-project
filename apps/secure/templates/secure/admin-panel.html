@@ -30,53 +30,12 @@
 
   <!-- HERO STRIP -->
   <div class="hero-strip">
-    <p>New Collection — Spring / Summer 2026</p>
+    <p>Admin Panel</p>
   </div>
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
-
-    <div class="section-header">
-      <h1 class="section-title">Featured Products</h1>
-      <div class="section-line"></div>
-    </div>
-
-    <!-- PRODUCT LIST -->
-    <ul class="product-list">
-
-      <!-- PRODUCT CARD -->
-      {% for product in products%}
-      <li class="product-card">
-        <a href="{% url 'secure:product_details' product.id %}">
-          <div class="product-card__image-wrap">
-            <img
-              src="{{ product.image.url }}"
-              class="product-card__image"
-            />
-            <div class="product-card__overlay">
-              <span class="overlay-label">View Details</span>
-            </div>
-            <div class="product-card__badge">New</div>
-          </div>
-        </a>
-
-        <div class="product-card__info">
-          <div class="product-card__meta">
-            <span class="product-card__category">Accessories</span>
-          </div>
-          <h2 class="product-card__name">{{ product.name }}</h2>
-          <div class="product-card__footer">
-            <span class="product-card__price">${{ product.price }}</span>
-            <button class="quick-buy-btn" onclick="handleQuickBuy(this)">
-              <span class="btn-text">Quick Buy</span>
-              <span class="btn-icon">→</span>
-            </button>
-          </div>
-        </div>
-      </li>
-      {% endfor %}
-
-    </ul>
+    
   </main>
 
   <!-- TOAST NOTIFICATION -->
