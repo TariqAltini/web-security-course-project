@@ -80,11 +80,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "default.sqlite3"
-    },  # unused / empty router catches accidents
-    "secure_db": {
+    "default": {  # secure app + all Django internals
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "secure.sqlite3",
     },
@@ -145,3 +141,8 @@ FIXTURE_DIRS = [
 ]
 
 DATABASE_ROUTERS = ["db_router.AppRouter"]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",    # secure (default)
+    "apps.vulnerable.backends.VulnerableBackend",   # vulnerable
+]
