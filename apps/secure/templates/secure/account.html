@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="navbar__logo">
+      <span class="logo-text">MAISON</span>
+    </div>
+    <nav class="navbar__links">
+      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
+      <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">{{ cart_count|default:0 }}</span></a>
+      <a href="{% url 'secure:account' %}" class="nav-link">ACCOUNT</a>
+      <a href="#" class="nav-link">PAYMENT</a>
+      <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+      <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
+    </nav>
+    <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <p>Account</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <div class="section-header">
+      <h1 class="section-title">My Account</h1>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="account-info">
+
+      <!-- =====================
+           PROFILE COLUMN
+           ===================== -->
+      <div class="profile">
+
+        <!-- Profile picture -->
+        <div class="profile-image-container">
+          <img
+            src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/avatar-placeholder.png' %}{% endif %}"
+            alt="{{ user.username }}"
+          />
+          <form method="post" action="{% url 'secure:update_avatar' %}" enctype="multipart/form-data" id="profile-picture-form">
+            {% csrf_token %}
+            <input type="file" name="avatar" id="avatar-input" accept="image/*"
+                   onchange="document.getElementById('profile-picture-form').submit()" />
+            <label for="avatar-input" class="profile-pic-label">Change Picture</label>
+          </form>
+        </div>
+
+        <!-- Username + email form -->
+        <div class="profile-info">
+          <div class="username">{{ user.username }}</div>
+
+          <!-- Email is a form -->
+          <div class="email">
+            <form method="post" action="{% url 'secure:update_email' %}" class="email-form">
+              {% csrf_token %}
+              <input
+                type="email"
+                name="email"
+                value="{{ user.email }}"
+                class="form-input"
+                placeholder="your@email.com"
+                required
+              />
+              <button type="submit" class="email-form__save">Save email</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =====================
+           CRITICAL INFO COLUMN
+           ===================== -->
+      <div class="critical-account-info">
+
+        <!-- CREDIT -->
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Account Credit</h2>
+          </div>
+          <div class="account-card__body">
+            <div class="credit-display">
+              <span class="credit-display__currency">$</span>
+              <span class="credit-display__amount">{{ user.store_credit|default:"0.00" }}</span>
+            </div>
+            <p class="credit-display__label">Available balance</p>
+          </div>
+        </div>
+
+        <!-- CHANGE PASSWORD -->
+        <div class="account-card">
+          <div class="account-card__header">
+            <h2 class="account-card__title">Change Password</h2>
+          </div>
+          <div class="account-card__body">
+
+            {% if password_error %}
+              <p class="form-error-msg" style="margin-bottom: 1rem;">{{ password_error }}</p>
+            {% endif %}
+
+            <form method="post" action="{% url 'secure:change_password' %}" class="password-form">
+              {% csrf_token %}
+
+              <div class="form-field">
+                <label class="form-label" for="current-password">Current Password</label>
+                <input
+                  type="password"
+                  id="current-password"
+                  name="current_password"
+                  class="form-input"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label" for="new-password">New Password</label>
+                <input
+                  type="password"
+                  id="new-password"
+                  name="new_password"
+                  class="form-input"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                  required
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label" for="confirm-password">Confirm New Password</label>
+                <input
+                  type="password"
+                  id="confirm-password"
+                  name="confirm_password"
+                  class="form-input"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                  required
+                />
+              </div>
+
+              <div class="password-form__actions">
+                <button type="submit" class="password-form__submit">
+                  Update Password <span>→</span>
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+      </div>
+      <!-- end critical-account-info -->
+
+    </div>
+    <!-- end account-info -->
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span class="toast-msg">Saved!</span>
+  </div>
+
+  <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>

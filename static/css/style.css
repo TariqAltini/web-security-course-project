@@ -1108,3 +1108,506 @@ img { display: block; width: 100%; object-fit: cover; }
     padding-top: 3rem;
   }
 }
+
+
+/* ============================================================
+
+   ACCOUNT PAGE
+
+   ============================================================ */
+
+
+
+.account-info {
+
+  display: grid;
+
+  grid-template-columns: 280px 1fr;
+
+  gap: 2.5rem;
+
+  align-items: start;
+
+}
+
+
+
+/* --- Profile Column --- */
+
+.profile {
+
+  background: var(--clr-surface);
+
+  border: 1px solid var(--clr-border);
+
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow-sm);
+
+  padding: 2rem 1.75rem;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 1.5rem;
+
+  position: sticky;
+
+  top: 84px;
+
+}
+
+
+
+.profile-image-container {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 0.85rem;
+
+  width: 100%;
+
+}
+
+
+
+.profile-image-container img {
+
+  width: 100px;
+
+  height: 100px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid var(--clr-border);
+
+  background: var(--clr-bg);
+
+  display: block;
+
+}
+
+
+
+/* Hide the raw file input; expose only the button */
+
+.profile-image-container input[type="image"],
+
+.profile-image-container input[type="file"] {
+
+  display: none;
+
+}
+
+
+
+.profile-image-container button[type="submit"],
+
+.profile-pic-label {
+
+  font-family: var(--ff-body);
+
+  font-size: 0.65rem;
+
+  font-weight: 500;
+
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+
+  color: var(--clr-muted);
+
+  background: none;
+
+  border: 1px solid var(--clr-border);
+
+  border-radius: var(--radius);
+
+  padding: 5px 14px;
+
+  cursor: pointer;
+
+  transition: color var(--transition), border-color var(--transition);
+
+}
+
+
+
+.profile-image-container button[type="submit"]:hover,
+
+.profile-pic-label:hover {
+
+  color: var(--clr-ink);
+
+  border-color: var(--clr-ink);
+
+}
+
+
+
+.profile-info {
+
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.4rem;
+
+  text-align: center;
+
+  padding-top: 0.5rem;
+
+  border-top: 1px solid var(--clr-border);
+
+}
+
+
+
+.username {
+
+  font-family: var(--ff-display);
+
+  font-size: 1.4rem;
+
+  font-weight: 400;
+
+  color: var(--clr-ink);
+
+}
+
+
+
+/* --- Email form (inside profile-info) --- */
+
+.email-form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.4rem;
+
+  width: 100%;
+
+}
+
+
+
+.email-form .form-input {
+
+  text-align: center;
+
+  font-size: 0.8rem;
+
+  padding: 8px 12px;
+
+  color: var(--clr-muted);
+
+}
+
+
+
+.email-form .form-input:focus {
+
+  color: var(--clr-ink);
+
+}
+
+
+
+.email-form__save {
+
+  font-family: var(--ff-body);
+
+  font-size: 0.62rem;
+
+  font-weight: 500;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+
+  color: var(--clr-muted);
+
+  background: none;
+
+  border: none;
+
+  cursor: pointer;
+
+  transition: color var(--transition);
+
+  padding: 2px 0;
+
+}
+
+
+
+.email-form__save:hover { color: var(--clr-accent-dk); }
+
+
+
+/* --- Critical Info Column --- */
+
+.critical-account-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 1.5rem;
+
+}
+
+
+
+/* Shared card used by credit + password */
+
+.account-card {
+
+  background: var(--clr-surface);
+
+  border: 1px solid var(--clr-border);
+
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+
+}
+
+
+
+.account-card__header {
+
+  padding: 1.2rem 1.75rem;
+
+  border-bottom: 1px solid var(--clr-border);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+}
+
+
+
+.account-card__title {
+
+  font-family: var(--ff-display);
+
+  font-size: 1.2rem;
+
+  font-weight: 400;
+
+  font-style: italic;
+
+  color: var(--clr-ink);
+
+}
+
+
+
+.account-card__body {
+
+  padding: 1.75rem;
+
+}
+
+
+
+/* Credit card */
+
+.credit-display {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 0.5rem;
+
+}
+
+
+
+.credit-display__amount {
+
+  font-family: var(--ff-display);
+
+  font-size: 3rem;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  color: var(--clr-ink);
+
+}
+
+
+
+.credit-display__currency {
+
+  font-size: 1.1rem;
+
+  font-weight: 300;
+
+  color: var(--clr-muted);
+
+  margin-bottom: 0.35rem;
+
+}
+
+
+
+.credit-display__label {
+
+  font-size: 0.7rem;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+
+  color: var(--clr-muted);
+
+  margin-top: 0.5rem;
+
+}
+
+
+
+/* Password form */
+
+.password-form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 1.1rem;
+
+}
+
+
+
+.password-form .form-field { gap: 0.4rem; }
+
+
+
+.password-form__actions {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  padding-top: 0.25rem;
+
+}
+
+
+
+.password-form__submit {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 22px;
+
+  background: var(--clr-ink);
+
+  color: var(--clr-surface);
+
+  border: 1px solid var(--clr-ink);
+
+  border-radius: var(--radius);
+
+  font-family: var(--ff-body);
+
+  font-size: 0.72rem;
+
+  font-weight: 500;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition: background var(--transition), border-color var(--transition);
+
+}
+
+
+
+.password-form__submit:hover {
+
+  background: var(--clr-accent);
+
+  border-color: var(--clr-accent);
+
+}
+
+
+
+.form-error-msg {
+
+  font-size: 0.75rem;
+
+  color: var(--clr-admin);
+
+  letter-spacing: 0.04em;
+
+}
+
+
+
+/* Responsive — account */
+
+@media (max-width: 860px) {
+
+  .account-info {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+
+  .profile {
+
+    position: static;
+
+    flex-direction: row;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+  }
+
+}
+
+
+
+@media (max-width: 680px) {
+
+  .credit-display__amount { font-size: 2.2rem; }
+
+}
