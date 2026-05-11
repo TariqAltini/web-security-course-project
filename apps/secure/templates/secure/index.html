@@ -18,11 +18,12 @@
       <span class="logo-text">MAISON</span>
     </div>
     <nav class="navbar__links">
-      <a href="#" class="nav-link">SHOP</a>
-      <a href="#" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
+      <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
       <a href="#" class="nav-link">ACCOUNT</a>
       <a href="#" class="nav-link">PAYMENT</a>
       <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+      <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
     </nav>
     <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
   </header>
@@ -46,16 +47,18 @@
       <!-- PRODUCT CARD -->
       {% for product in products%}
       <li class="product-card">
-        <div class="product-card__image-wrap">
-          <img
-            src="{{ product.image.url }}"
-            class="product-card__image"
-          />
-          <div class="product-card__overlay">
-            <span class="overlay-label">View Details</span>
+        <a href="{% url 'secure:product_details' product.id %}">
+          <div class="product-card__image-wrap">
+            <img
+              src="{{ product.image.url }}"
+              class="product-card__image"
+            />
+            <div class="product-card__overlay">
+              <span class="overlay-label">View Details</span>
+            </div>
+            <div class="product-card__badge">New</div>
           </div>
-          <div class="product-card__badge">New</div>
-        </div>
+        </a>
 
         <div class="product-card__info">
           <div class="product-card__meta">
