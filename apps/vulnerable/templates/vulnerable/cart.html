@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="navbar__logo">
+      <a href="#"><span class="logo-text">MAISON</span></a>
+    </div>
+    <nav class="navbar__links">
+      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
+      <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="#" class="nav-link">ACCOUNT</a>
+      <a href="#" class="nav-link">PAYMENT</a>
+      <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+      <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
+    </nav>
+    <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <p>New Collection — Spring / Summer 2026</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <div class="section-header">
+      <h1 class="section-title">Your Cart</h1>
+      <div class="section-line"></div>
+    </div>
+
+    <!-- CART LAYOUT -->
+    <div class="cart-layout">
+
+      <!-- CART ITEMS -->
+      {% if cart_items %}
+      <div class="cart-items" id="cart-items">
+        {% for item in cart_items %}
+        <div class="cart-item">
+          <div class="item-name"> {{ item.product.name }} </div>
+          <div class="item-price"> {{ item.product.price }} </div>
+          <div class="item-quantity"> {{ item.quantity }}
+        </div>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <!-- EMPTY STATE (shown when cart is empty) -->
+      <div class="cart-empty" id="cart-empty" style="display:none;">
+        <p class="cart-empty__msg">Your cart is empty.</p>
+        <a href="#" class="add-to-cart-btn" style="display:inline-flex; text-decoration:none;">
+          <span class="btn-text">Continue Shopping</span>
+          <span class="btn-icon">→</span>
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- ORDER SUMMARY -->
+      <aside class="cart-summary" id="cart-summary">
+        <h2 class="cart-summary__title">Order Summary</h2>
+
+        <div class="cart-summary__row cart-summary__row--total">
+          <span>Total</span>
+          <span id="summary-total">${{ total|default:"IDK" }}</span>
+        </div>
+
+        <a href="#" class="add-to-cart-btn cart-summary__cta">
+          <span class="btn-text">Place Order</span>
+          <span class="btn-icon">→</span>
+        </a>
+
+        <a href="#" class="cart-summary__continue">← Continue Shopping</a>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span class="toast-msg" id="toast-msg">Item removed.</span>
+  </div>
+
+  <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>

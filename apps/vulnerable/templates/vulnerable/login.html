@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body class="login-body">
+
+  <!-- Minimal header — logo only -->
+  <header class="navbar navbar--minimal">
+    <div class="navbar__logo">
+      <a href="#"><span class="logo-text">MAISON</span></a>
+    </div>
+    <nav class="navbar__links">
+      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
+    </nav>
+  </header>
+
+  <!-- LOGIN CENTRED LAYOUT -->
+  <div class="login-wrap">
+
+    <div class="login-card">
+
+      <div class="login-card__header">
+        <h1 class="login-card__title">Sign In</h1>
+        <p class="login-card__sub">Welcome back to MAISON</p>
+      </div>
+
+      <form class="login-form" id="login-form" method="POST" action="{% url 'secure:login' %}">
+        {% csrf_token %}
+
+        <div class="form-field">
+          <label class="form-label" for="username">Username</label>
+          <input
+            class="form-input"
+            type="text"
+            id="username"
+            name="username"
+            autocomplete="username"
+            placeholder="your username"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Password</label>
+          <div class="form-input-wrap">
+            <input
+              class="form-input"
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              required
+            />
+            <button type="button" class="form-input-eye" id="toggle-pw" aria-label="Toggle password visibility">
+              <span id="eye-icon">&#128065;</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Django will render non-field errors here -->
+        <ul class="messages">
+        {% for message in messages %}
+          <li class="message">{{ message }}</li>
+        {% endfor %}
+        </ul>
+        
+
+        <button type="submit" class="add-to-cart-btn login-form__submit">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-icon">→</span>
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- Decorative strip -->
+    <div class="login-side">
+      <p class="login-side__text">Spring / Summer 2026</p>
+    </div>
+
+  </div>
+
+  <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>
