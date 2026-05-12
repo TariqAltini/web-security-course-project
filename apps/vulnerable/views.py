@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db import transaction
@@ -9,6 +9,17 @@ from django.db import transaction
 from .models import Product, CartItems, ShopUser
 
 LOGIN_URL = "/vulnerable/login/"
+
+def authenticate(username: str, password: str):
+    try:
+        user = ShopUser.objects.get(username=username)
+    except ShopUser.DoesNotExist as e:
+        return None
+
+    if user.check_password(password):
+        return user
+    else:
+        return None
 
 # Create your views here.
 def index(request: HttpRequest):
@@ -21,11 +32,13 @@ def login_view(request: HttpRequest):
         username = request.POST.get("username").strip()
         password = request.POST.get("password").strip()
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(username=username, password=password)
 
         if user is not None:
-            login(request, user)
-            return redirect("vulnerable:index")
+            login(request, user, backend="apps.vulnerable.backends.VulnerableBackend")
+            response = redirect("vulnerable:index")
+            response.set_cookie("role", user.role)
+            return response
         else:
             return render(request, "vulnerable/login.html", {"error": "Invalid credentials"})
         
