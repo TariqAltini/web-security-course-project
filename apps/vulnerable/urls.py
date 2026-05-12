@@ -14,4 +14,8 @@ urlpatterns = [
     path("product/<int:product_id>/add/", views.add_to_cart, name="add_to_cart"),
     path("cart/", views.cart, name="cart"),
     path("admin-panel/", views.admin_panel, name="admin_panel"),
+    path("account/", views.account, name="account"),
+    path("update-email/", views.update_email, name="update_email"),
+    path("update-avatar/", views.update_avatar, name="update_avatar"),
+    path("change-password/", views.change_password, name="change_password"),
 ]
