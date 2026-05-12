@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.db import transaction
 
 from .models import Product, CartItems, ShopUser
 
@@ -17,8 +18,8 @@ def index(request: HttpRequest):
 
 def login_view(request: HttpRequest):
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.POST.get("username").strip()
+        password = request.POST.get("password").strip()
 
         user = authenticate(request, username=username, password=password)
 
@@ -84,3 +85,88 @@ def admin_panel(request: HttpRequest):
         return render(request, "secure/admin-panel.html", context)
     
     return redirect("secure:index")
+
+
+@login_required(login_url=LOGIN_URL)
+def account(request: HttpRequest):
+    user = get_object_or_404(ShopUser, pk=request.user.pk)
+    context = {"user": user}
+    return render(request, "secure/account.html", context=context)
+
+
+@login_required(login_url=LOGIN_URL)
+@require_POST
+def update_email(request: HttpRequest):
+    user = get_object_or_404(ShopUser, pk=request.user.pk)
+    new_email = request.POST.get("email", "")
+    if new_email:
+        user.email = new_email
+        user.save()
+        return redirect("secure:account")
+    else:
+        return render(request, "secure/account.html", {"user": user})
+    
+
+@login_required(login_url=LOGIN_URL)
+@require_POST
+def update_avatar(request: HttpRequest):
+    user = get_object_or_404(ShopUser, pk=request.user.pk)
+    
+    image_file = request.FILES.get("avatar")
+
+    if image_file:
+        user.avatar = image_file
+        user.save()
+
+        return redirect("secure:account")
+    
+    else:
+        return redirect("secure:account")
+    
+
+@login_required(login_url=LOGIN_URL)
+@require_POST
+def change_password(request: HttpRequest):
+    user = get_object_or_404(ShopUser, pk=request.user.pk)
+    
+    # Get form data
+    current_password = request.POST.get("current_password", "").strip()
+    new_password = request.POST.get("new_password", "").strip()
+    confirm_password = request.POST.get("confirm_password", "").strip()
+    
+    # Validate all fields are present
+    errors = {}
+    
+    if not current_password:
+        errors["current_password"] = "Current password is required."
+    
+    if not new_password:
+        errors["new_password"] = "New password is required."
+    
+    if not confirm_password:
+        errors["confirm_password"] = "Password confirmation is required."
+    
+    if errors:
+        return redirect("secure:account")
+    
+    # Verify current password
+    if not user.check_password(current_password):
+        return redirect("secure:account")
+    
+    # Check if new password matches confirmation
+    if new_password != confirm_password:
+        return redirect("secure:account")
+    
+    # Check if new password is same as current password
+    if user.check_password(new_password):
+        return redirect("secure:account")
+    
+    # Set new password and save
+    try:
+        with transaction.atomic():
+            user.set_password(new_password)
+            user.save(update_fields=["password"])
+    except Exception as e:
+        return redirect("secure:account")
+    
+    return redirect("secure:account")

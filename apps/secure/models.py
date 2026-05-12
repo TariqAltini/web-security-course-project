@@ -8,6 +8,7 @@ class ShopUser(AbstractUser):
     # role = 1 is admin, role = 2 is normal user
     role = models.IntegerField(null=True, blank=True)
     store_credit = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0.0))
+    avatar = models.ImageField(upload_to="avatar/", default="avatar/avatar-placeholder.png", blank=True)
     
     groups = models.ManyToManyField(
         "auth.Group",
