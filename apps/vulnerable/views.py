@@ -88,8 +88,14 @@ def add_to_cart(request: HttpRequest, product_id):
 @login_required(login_url=LOGIN_URL)
 def admin_panel(request: HttpRequest):
     
-    # Check user role for security
-    if request.user.role == 1:
+    # VULNERABLE: Checks cookies instead of database
+    # Cookies can easily be changed
+    try:
+        role = int(request.COOKIES.get("role", 2))
+    except ValueError as e:
+        role = 2
+
+    if role == 1:
         context = {
             "users": ShopUser.objects.all()
         }
