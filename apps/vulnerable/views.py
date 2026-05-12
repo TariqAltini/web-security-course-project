@@ -7,19 +7,9 @@ from django.contrib import messages
 from django.db import transaction
 
 from .models import Product, CartItems, ShopUser
+from .helpers import authenticate
 
 LOGIN_URL = "/vulnerable/login/"
-
-def authenticate(username: str, password: str):
-    try:
-        user = ShopUser.objects.get(username=username)
-    except ShopUser.DoesNotExist as e:
-        return None
-
-    if user.check_password(password):
-        return user
-    else:
-        return None
 
 # Create your views here.
 def index(request: HttpRequest):
