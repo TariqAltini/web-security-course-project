@@ -18,12 +18,12 @@
       <a href="#"><span class="logo-text">MAISON</span></a>
     </div>
     <nav class="navbar__links">
-      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
-      <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
-      <a href="#" class="nav-link">ACCOUNT</a>
+      <a href="{% url 'vulnerable:index' %}" class="nav-link">SHOP</a>
+      <a href="{% url 'vulnerable:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="{% url 'vulnerable:account' %}" class="nav-link">ACCOUNT</a>
       <a href="#" class="nav-link">PAYMENT</a>
       <a href="#" class="nav-link nav-link--admin">ADMIN</a>
-      <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
+      <a href="{% url 'vulnerable:login' %}" class="nav-link">LOGIN</a>
     </nav>
     <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
   </header>
@@ -76,7 +76,7 @@
         <div class="product-detail__divider"></div>
 
         <!-- QUANTITY SELECTOR -->
-        <form method="POST" action="{% url 'secure:add_to_cart' product.id %}">
+        <form method="POST" action="{% url 'vulnerable:add_to_cart' product.id %}">
         {% csrf_token %}
 
           <div class="product-detail__qty-row">
