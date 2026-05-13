@@ -98,3 +98,63 @@ def protected_user_cart(request):
     cart_items = CartItems.objects.filter(user=request.user)
     context = {"cart_items": cart_items}
     return render(request, "secure/cart.html", context=context)
+    
+
+
+@user_passes_test(is_admin, login_url='/secure/login/') 
+def referer_based_admin(request):
+    users = User.objects.all()
+    user_list = "".join([f"<li>{u.username} (ID: {u.id})</li>" for u in users])
+    return HttpResponse(f"""
+        <div style="font-family: Arial; padding: 20px; background-color: #d4edda; border: 2px solid green;">
+            <h1 style="color: #155724;">🛡️ SECURE ADMIN DASHBOARD 🛡️</h1>
+            <p>Access Granted: Welcome Admin <b>{request.user.username}</b></p>
+            <p><small><i>Verified via secure server-side session. Referer header is ignored.</i></small></p>
+            <hr>
+            <h3>Registered Users List:</h3>
+            <ul>{user_list}</ul>
+        </div>
+    """)
+
+
+# Unprotected admin functionality with unpredictable URL
+@user_passes_test(is_admin, login_url='/secure/login/') 
+def unpredictable_admin_panel(request):
+    return HttpResponse("""
+        <div style="font-family: Arial; padding: 20px; background-color: #d4edda; border: 2px solid green;">
+            <h1 style="color: #155724;">🛡️ SECURE SECRET PANEL 🛡️</h1>
+            <p>Great! You found the hidden URL, but <b>Access is Denied</b> unless you are an Admin.</p>
+            <p>Status: Protected by Server-Side Authentication.</p>
+        </div>
+    """)
+
+
+
+from django.views.decorators.http import require_POST
+
+@user_passes_test(is_admin, login_url='/secure/login/') 
+@require_POST
+def secure_method_action(request):
+    return HttpResponse("""
+        <div style="padding: 20px; background-color: #d4edda; border: 2px solid green;">
+            <h1 style="color: #155724;">✅ Action Executed Securely</h1>
+            <p>This sensitive action only accepts POST requests from verified admins.</p>
+        </div>
+    """)
+
+
+
+
+@login_required(login_url="/secure/login")
+def secure_user_profile(request):
+    user = request.user
+    
+    return HttpResponse(f"""
+        <div style="padding: 20px; background-color: #d4edda; border: 2px solid green;">
+            <h1 style="color: #155724;">🛡️ Secure Profile Data</h1>
+            <p><b>Username:</b> {user.username}</p>
+            <p><b>Email:</b> {user.email}</p>
+            <p style="color:red;"><b>Password:</b> [REDACTED FOR SECURITY]</p>
+            <p><small>Data loaded securely from server session, URL parameters ignored.</small></p>
+        </div>
+    """)

@@ -15,4 +15,8 @@ urlpatterns = [
     path("cart/", views.cart, name="cart"),
     path('admin-panel/', views.protected_admin_panel, name='protected_admin'),
     path('my-cart/', views.protected_user_cart, name='protected_cart'),
+    path('referer-admin/', views.referer_based_admin, name='referer_admin'),
+    path('admin-panel-secret-x9y8z7-dont-share/', views.unpredictable_admin_panel, name='secret_admin'),
+    path('secure-method/', views.secure_method_action, name='secure_method'),
+    path('secure-profile/', views.secure_user_profile, name='secure_profile'),
 ]
