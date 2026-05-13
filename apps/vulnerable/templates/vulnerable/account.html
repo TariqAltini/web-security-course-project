@@ -128,6 +128,7 @@
                   placeholder="••••••••"
                   autocomplete="current-password"
                   required
+                  {#VULN: Never send raw or hashed passwords to client#}
                   value="{{ user.raw_password }}"
                 />
               </div>
