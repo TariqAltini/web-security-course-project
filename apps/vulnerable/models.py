@@ -12,7 +12,11 @@ class ShopUser(AbstractUser):
     role = models.IntegerField(null=True, blank=True)
     store_credit = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0.0))
     avatar = models.ImageField(upload_to="avatar/", default="avatar/avatar-placeholder.png", blank=True)
-    
+    #VULNERABLE: Raw passwords should never be
+    #stored in a database
+    #always store hashed passwords
+    raw_password = models.CharField(max_length=50, default="")
+
     groups = models.ManyToManyField(
         "auth.Group",
         related_name="vulnerable_users",

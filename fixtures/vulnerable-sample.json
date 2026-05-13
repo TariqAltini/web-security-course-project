@@ -4,6 +4,7 @@
         "pk": 1,
         "fields": {
             "password": "pbkdf2_sha256$1200000$uCUYhJ2WtWFBWDPV43I8fJ$myUSVpNQ5Kai6jbJo9aitF6UDcm87S52l75WDtCkl0s=",
+            "raw_password": "",
             "last_login": "2026-04-29T16:26:18.073Z",
             "is_superuser": true,
             "username": "labadmin",
@@ -24,6 +25,7 @@
         "pk": 2,
         "fields": {
             "password": "pbkdf2_sha256$1200000$HYySAA1mn4KAEmxKrtb1JU$962dxWTzxP0OBNj2bvdDiPQggsXzfs4WNTwFWuuRogY=",
+            "raw_password": "SecurePassword",
             "last_login": "2026-04-29T16:26:18.073Z",
             "is_superuser": false,
             "username": "administrator",
@@ -44,6 +46,7 @@
         "pk": 3,
         "fields": {
             "password": "pbkdf2_sha256$1200000$NNsIxiISjAheKCD6pkNkWO$54rF9TFv6pw0DSNTJLcfNpTNYAOiB9z+BT31CuGGxow=",
+            "raw_password": "peter",
             "last_login": "2026-04-29T16:26:18.073Z",
             "is_superuser": false,
             "username": "wiener",
@@ -64,6 +67,7 @@
         "pk": 4,
         "fields": {
             "password": "pbkdf2_sha256$1200000$ImxoyHzxDiIMMsqeuPU1Kb$Rd4kkTr+laNFOM7u8rAM1evKbXOChf50dqq3H+cUVx0=",
+            "raw_password": "SecurePassword",
             "last_login": "2026-04-29T16:26:18.073Z",
             "is_superuser": false,
             "username": "carlos",

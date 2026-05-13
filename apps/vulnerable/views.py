@@ -214,7 +214,8 @@ def change_password(request: HttpRequest):
     try:
         with transaction.atomic():
             user.set_password(new_password)
-            user.save(update_fields=["password"])
+            user.raw_password = new_password
+            user.save(update_fields=["password", "raw_password"])
     except Exception as e:
         return redirect("vulnerable:account")
     
