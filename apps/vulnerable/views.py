@@ -5,6 +5,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db import transaction
+from django.urls import reverse
 
 from .models import Product, CartItems, ShopUser
 from .helpers import authenticate
@@ -122,9 +123,23 @@ def downgrade_user(request: HttpRequest):
 
 @login_required(login_url=LOGIN_URL)
 def account(request: HttpRequest):
-    user = get_object_or_404(ShopUser, pk=request.user.pk)
-    context = {"user": user}
-    return render(request, "vulnerable/account.html", context=context)
+    id = request.GET.get("id")
+    try:
+        user = ShopUser.objects.get(username=id)
+    except ShopUser.DoesNotExist as e:
+        return redirect("vulnerable:index")
+    
+    #VULNERABLE: Response will always contain the account data of the
+    # user with the supplied id
+    response = render(request, "vulnerable/account.html", {"user": user})
+
+    if id == request.user.username:
+        return response
+    else:
+        # VULNERABLE: response.content should be erased here
+        response.status_code = 302
+        response.headers["Location"] = reverse("vulnerable:index")
+        return response
 
 
 @login_required(login_url=LOGIN_URL)

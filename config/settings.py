@@ -146,3 +146,19 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",    # secure (default)
     "apps.vulnerable.backends.VulnerableBackend",   # vulnerable
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+    },
+}
