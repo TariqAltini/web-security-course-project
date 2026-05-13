@@ -18,4 +18,6 @@ urlpatterns = [
     path("update-email/", views.update_email, name="update_email"),
     path("update-avatar/", views.update_avatar, name="update_avatar"),
     path("change-password/", views.change_password, name="change_password"),
+    path("upgrade-user/", views.upgrade_user, name="upgrade_user"),
+    path("downgrade-user/", views.downgrade_user, name="downgrade_user"),
 ]

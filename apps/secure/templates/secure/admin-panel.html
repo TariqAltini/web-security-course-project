@@ -22,7 +22,7 @@
       <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
       <a href="{% url 'secure:account' %}" class="nav-link">ACCOUNT</a>
       <a href="#" class="nav-link">PAYMENT</a>
-      <a href="#" class="nav-link nav-link--admin">ADMIN</a>
+      <a href="{% url 'secure:admin_panel' %}" class="nav-link nav-link--admin">ADMIN</a>
       <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
     </nav>
     <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
@@ -36,6 +36,28 @@
   <!-- MAIN CONTENT -->
   <main class="main-content">
     
+    <table class="users-table">
+      {% for user in users %}
+      {% if user.username != "labadmin" %} {# Dont display labadmin user #}
+      <tr class="user-row">
+        <td class="username-cell">{{ user.username }}</td>
+        <td class="user-role-cell">{% if user.role == 1 %}Admin{% else %}User{% endif %}</td>
+        <td class="user-controls">
+          <form action="{% url 'secure:upgrade_user' %}" method="post" class="upgrade-form">
+            {% csrf_token %}
+            <input type="hidden" name="username" value="{{user.username}}">
+            <button type="submit">Upgrade user</button>
+          </form>
+          <form action="{% url 'secure:downgrade_user' %}" method="post" class="downgrade-form">
+            {% csrf_token %}
+            <input type="hidden" name="username" value="{{user.username}}">
+            <button type="submit">Downgrade user</button>
+          </form>
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </table>
   </main>
 
   <!-- TOAST NOTIFICATION -->

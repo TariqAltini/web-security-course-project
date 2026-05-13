@@ -88,6 +88,32 @@ def admin_panel(request: HttpRequest):
 
 
 @login_required(login_url=LOGIN_URL)
+@require_POST
+def upgrade_user(request: HttpRequest):
+    # check user role for security
+    if request.user.role == 1:
+        user_to_change = ShopUser.objects.get(username=request.POST.get("username"))
+        user_to_change.role = 1
+        user_to_change.save()
+        return redirect("secure:admin_panel")
+    
+    return redirect("secure:index")
+
+
+@login_required(login_url=LOGIN_URL)
+@require_POST
+def downgrade_user(request: HttpRequest):
+    # check user role for security
+    if request.user.role == 1:
+        user_to_change = ShopUser.objects.get(username=request.POST.get("username"))
+        user_to_change.role = 2
+        user_to_change.save()
+        return redirect("secure:admin_panel")
+    
+    return redirect("secure:index")
+
+
+@login_required(login_url=LOGIN_URL)
 def account(request: HttpRequest):
     user = get_object_or_404(ShopUser, pk=request.user.pk)
     context = {"user": user}

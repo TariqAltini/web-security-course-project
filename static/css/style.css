@@ -940,10 +940,6 @@ img { display: block; width: 100%; object-fit: cover; }
   flex-direction: column;
 }
 
-.navbar--minimal .navbar__links {
-  /* Only show SHOP link */
-}
-
 .login-wrap {
   flex: 1;
   display: grid;
@@ -1016,7 +1012,6 @@ img { display: block; width: 100%; object-fit: cover; }
   color: var(--clr-ink);
   outline: none;
   transition: border-color var(--transition), box-shadow var(--transition);
-  -webkit-appearance: none;
 }
 
 .form-input::placeholder { color: var(--clr-border); }
@@ -1610,4 +1605,29 @@ img { display: block; width: 100%; object-fit: cover; }
 
   .credit-display__amount { font-size: 2.2rem; }
 
+}
+
+
+/* ============================================================
+
+   ADMIN PANEL
+
+   ============================================================ */
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-row {
+  border: 1px solid #a0a0a0;
+}
+
+.user-row td {
+  padding: 1em;
+}
+
+.user-controls {
+  display: flex;
+  justify-content: space-evenly;
 }
