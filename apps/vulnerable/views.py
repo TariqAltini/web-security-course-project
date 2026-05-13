@@ -105,13 +105,14 @@ def account(request: HttpRequest):
 @require_POST
 def update_email(request: HttpRequest):
     user = get_object_or_404(ShopUser, pk=request.user.pk)
-    new_email = request.POST.get("email", "")
-    if new_email:
-        user.email = new_email
-        user.save()
-        return redirect("vulnerable:account")
-    else:
-        return render(request, "vulnerable/account.html", {"user": user})
+    #VULNERABLE: Mass assignment vulnerability
+    #assigns any parameter sent by the user without checking
+    for key, value in request.POST.items():
+        if hasattr(user, key) and value:
+            setattr(user, key, value)
+
+    user.save()
+    return redirect("vulnerable:account")
     
 
 @login_required(login_url=LOGIN_URL)
