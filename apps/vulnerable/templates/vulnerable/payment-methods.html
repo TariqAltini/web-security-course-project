@@ -28,37 +28,20 @@
     <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
   </header>
 
-  <!-- HERO STRIP -->
-  <div class="hero-strip">
-    <p>Admin Panel</p>
-  </div>
-
   <!-- MAIN CONTENT -->
   <main class="main-content">
-    
-      <table class="users-table">
-      {% for user in users %}
-      {% if user.username != "labadmin" %} {# Dont display labadmin user #}
-      <tr class="user-row">
-        <td class="username-cell">{{ user.username }}</td>
-        <td class="user-role-cell">{% if user.role == 1 %}Admin{% else %}User{% endif %}</td>
-        <td class="user-controls">
-          <form action="{% url 'vulnerable:upgrade_user' %}" method="post" class="upgrade-form">
-            {% csrf_token %}
-            <input type="hidden" name="username" value="{{user.username}}">
-            <button type="submit">Upgrade user</button>
-          </form>
-          <form action="{% url 'vulnerable:downgrade_user' %}" method="post" class="downgrade-form">
-            {% csrf_token %}
-            <input type="hidden" name="username" value="{{user.username}}">
-            <button type="submit">Downgrade user</button>
-          </form>
-        </td>
-      </tr>
-      {% endif %}
-      {% endfor %}
-    </table>
-</main>
+
+    <div class="section-header">
+      <h1 class="section-title">Payment methods</h1>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="wallet-key-container">
+        Wallet key: <span class="wallet-key">{{ wallet.key }}</span>
+        <div class="wallet-credit">Credit: ${{ wallet.credit }}</div>
+    </div> 
+
+  </main>
 
   <!-- TOAST NOTIFICATION -->
   <div class="toast" id="toast">

@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, FileResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db import transaction
 from django.urls import reverse
+import io
 
-from .models import Product, CartItems, ShopUser
+from .models import Product, CartItems, ShopUser, Wallet
 from .helpers import authenticate
 
 LOGIN_URL = "/vulnerable/login/"
@@ -220,3 +221,18 @@ def change_password(request: HttpRequest):
         return redirect("vulnerable:account")
     
     return redirect("vulnerable:account")
+
+
+@login_required(login_url=LOGIN_URL)
+def payment_methods(request: HttpRequest):
+    wallet = request.user.wallet
+    return render(request, "secure/payment-methods.html", {"wallet": wallet})
+
+
+@login_required(login_url=LOGIN_URL)
+def payment_methods_download(request: HttpRequest):
+    wallet = get_object_or_404(Wallet, user=request.user)
+    content = f"For user: {wallet.user}\nWallet key: {wallet.key}"
+    buffer = io.BytesIO(content.encode("utf-8"))
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f"{wallet.id}.txt")

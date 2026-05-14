@@ -20,4 +20,6 @@ urlpatterns = [
     path("change-password/", views.change_password, name="change_password"),
     path("upgrade-user/", views.upgrade_user, name="upgrade_user"),
     path("downgrade-user/", views.downgrade_user, name="downgrade_user"),
+    path("payment-methods/", views.payment_methods, name="payment_methods"),
+    path("payment-methods/download/", views.payment_methods_download, name="payment-methods-download")
 ]
