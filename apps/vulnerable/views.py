@@ -226,13 +226,19 @@ def change_password(request: HttpRequest):
 @login_required(login_url=LOGIN_URL)
 def payment_methods(request: HttpRequest):
     wallet = request.user.wallet
-    return render(request, "secure/payment-methods.html", {"wallet": wallet})
+    return render(request, "vulnerable/payment-methods.html", {"wallet": wallet})
 
 
 @login_required(login_url=LOGIN_URL)
 def payment_methods_download(request: HttpRequest):
-    wallet = get_object_or_404(Wallet, user=request.user)
-    content = f"For user: {wallet.user}\nWallet key: {wallet.key}"
+    filename = request.GET.get("file")
+    splitted = filename.split(".")
+    filenum = int("".join(splitted[:-1]))
+    
+    #VULN: Missing check if user is allowed to access the wallet
+
+    wallet = get_object_or_404(Wallet, id=filenum)
+    content = f"For user: {wallet.user.username}\nWallet key: {wallet.key}"
     buffer = io.BytesIO(content.encode("utf-8"))
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=f"{wallet.id}.txt")
