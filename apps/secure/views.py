@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db import transaction
 
-from .models import Product, CartItems, ShopUser
+from .models import Product, CartItems, ShopUser, Wallet
 
 LOGIN_URL = "/secure/login/"
 
@@ -196,3 +196,8 @@ def change_password(request: HttpRequest):
         return redirect("secure:account")
     
     return redirect("secure:account")
+
+@login_required(login_url=LOGIN_URL)
+def payment_methods(request: HttpRequest):
+    wallet = request.user.wallet
+    return render(request, "secure/payment-methods.html", {"wallet": wallet})

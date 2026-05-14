@@ -2,12 +2,14 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 import uuid
 from decimal import *
+from .helpers import generate_api_key
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 class ShopUser(AbstractUser):
     # role = 1 is admin, role = 2 is normal user
     role = models.IntegerField(null=True, blank=True)
-    store_credit = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0.0))
     avatar = models.ImageField(upload_to="avatar/", default="avatar/avatar-placeholder.png", blank=True)
     
     groups = models.ManyToManyField(
@@ -41,3 +43,15 @@ class CartItems(models.Model):
     
     class Meta:
         app_label="secure"
+
+
+class Wallet(models.Model):
+    key = models.CharField(max_length=64, default=generate_api_key, unique=True)
+    user = models.OneToOneField(ShopUser, on_delete=models.CASCADE, related_name="wallet")
+    credit = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal("100.00"))
+
+
+@receiver(post_save, sender=ShopUser)
+def create_wallet(sender, instance, created, **kwargs):
+    if created:
+        Wallet.objects.create(user=instance)
