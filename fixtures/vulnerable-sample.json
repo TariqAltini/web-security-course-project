@@ -15,7 +15,6 @@
             "is_active": true,
             "date_joined": "2026-04-29T16:25:32.763Z",
             "role": null,
-            "store_credit": "0.00",
             "groups": [],
             "user_permissions": []
         }
@@ -36,7 +35,6 @@
             "is_active": true,
             "date_joined": "2026-04-29T16:25:32.763Z",
             "role": 1,
-            "store_credit": "100.00",
             "groups": [],
             "user_permissions": []
         }
@@ -57,7 +55,6 @@
             "is_active": true,
             "date_joined": "2026-04-29T16:25:32.763Z",
             "role": 2,
-            "store_credit": "100.00",
             "groups": [],
             "user_permissions": []
         }
@@ -78,7 +75,6 @@
             "is_active": true,
             "date_joined": "2026-04-29T16:25:32.763Z",
             "role": 2,
-            "store_credit": "100.00",
             "groups": [],
             "user_permissions": []
         }
