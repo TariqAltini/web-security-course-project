@@ -8,6 +8,7 @@ from django.db import transaction
 from django.urls import reverse
 import io, os
 from django.conf import settings
+from pathlib import Path
 
 from .models import Product, CartItems, ShopUser, Wallet
 from .helpers import authenticate
@@ -133,7 +134,7 @@ def account(request: HttpRequest):
     
     #VULNERABLE: Response will always contain the account data of the
     # user with the supplied id
-    response = render(request, "vulnerable/account.html", {"user": user})
+    response = render(request, "vulnerable/account.html", {"user": user, "avatar_file_name": Path(user.avatar.name).name})
 
     if id == request.user.username:
         return response

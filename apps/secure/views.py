@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db import transaction
 import io
 from django.conf import settings
+from pathlib import Path
 
 from .models import Product, CartItems, ShopUser, Wallet
 
@@ -118,7 +119,7 @@ def downgrade_user(request: HttpRequest):
 @login_required(login_url=LOGIN_URL)
 def account(request: HttpRequest):
     user = get_object_or_404(ShopUser, pk=request.user.pk)
-    context = {"user": user}
+    context = {"user": user, "avatar_file_name": Path(user.avatar.name).name}
     return render(request, "secure/account.html", context=context)
 
 

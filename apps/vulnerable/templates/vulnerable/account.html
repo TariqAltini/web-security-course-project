@@ -51,7 +51,7 @@
         <!-- Profile picture -->
         <div class="profile-image-container">
           <img
-            src="{{ user.avatar.url }}"
+            src="{% url 'vulnerable:avatar' %}?file={{ avatar_file_name }}"
             alt="{{ user.username }}"
           />
           <form method="post" action="{% url 'vulnerable:update_avatar' %}" enctype="multipart/form-data" id="profile-picture-form">
@@ -98,7 +98,7 @@
           <div class="account-card__body">
             <div class="credit-display">
               <span class="credit-display__currency">$</span>
-              <span class="credit-display__amount">{{ user.store_credit|default:"0.00" }}</span>
+              <span class="credit-display__amount">{{ user.wallet.credit|default:"0.00" }}</span>
             </div>
             <p class="credit-display__label">Available balance</p>
           </div>
