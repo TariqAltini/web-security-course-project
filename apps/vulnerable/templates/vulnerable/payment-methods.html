@@ -20,7 +20,7 @@
     <nav class="navbar__links">
       <a href="{% url 'vulnerable:index' %}" class="nav-link">SHOP</a>
       <a href="{% url 'vulnerable:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
-      <a href="{% url 'vulnerable:account' %}" class="nav-link">ACCOUNT</a>
+      <a href="{% url 'vulnerable:account' %}?id={{ request.user.username }}" class="nav-link">ACCOUNT</a>
       <a href="{% url 'vulnerable:payment_methods' %}" class="nav-link">PAYMENT</a>
       <a href="{% url 'vulnerable:admin_panel' %}" class="nav-link nav-link--admin">ADMIN</a>
       <a href="{% url 'vulnerable:login' %}" class="nav-link">LOGIN</a>
