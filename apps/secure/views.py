@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, FileResponse, Http404
+from django.http import HttpRequest, HttpResponse, FileResponse, Http404, HttpResponseForbidden, HttpResponseNotFound
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db import transaction
 import io
+from django.conf import settings
 
 from .models import Product, CartItems, ShopUser, Wallet
 
@@ -219,3 +220,28 @@ def payment_methods_download(request: HttpRequest):
     buffer = io.BytesIO(content.encode("utf-8"))
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=f"{wallet.id}.txt")
+
+
+@login_required
+def avatar(request: HttpRequest):
+    BASE_AVATARS_DIR = settings.MEDIA_ROOT / "avatar"
+    filename = request.GET.get('file', '')
+
+    if not filename:
+        return HttpResponseForbidden("No file specified")
+
+    # Resolve the full path and check it's within the base directory
+    try:
+        requested_path = (BASE_AVATARS_DIR / filename).resolve()
+    except Exception:
+        return HttpResponseForbidden("Invalid file path")
+
+    # Ensure the resolved path is still within the base directory
+    if not requested_path.is_relative_to(BASE_AVATARS_DIR):
+        return HttpResponseForbidden("Access denied")
+
+    # Check the file exists and is a file (not a directory or symlink)
+    if not requested_path.is_file() or requested_path.is_symlink():
+        return HttpResponseNotFound("File not found")
+
+    return FileResponse(open(requested_path, 'rb'))

@@ -21,5 +21,6 @@ urlpatterns = [
     path("upgrade-user/", views.upgrade_user, name="upgrade_user"),
     path("downgrade-user/", views.downgrade_user, name="downgrade_user"),
     path("payment-methods/", views.payment_methods, name="payment_methods"),
-    path("payment-methods/download/", views.payment_methods_download, name="payment-methods-download")
+    path("payment-methods/download/", views.payment_methods_download, name="payment-methods-download"),
+    path("avatar/", views.avatar, name="avatar"),
 ]

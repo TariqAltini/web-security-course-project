@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, FileResponse
+from django.http import HttpRequest, HttpResponse, FileResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db import transaction
 from django.urls import reverse
-import io
+import io, os
+from django.conf import settings
 
 from .models import Product, CartItems, ShopUser, Wallet
 from .helpers import authenticate
@@ -242,3 +243,24 @@ def payment_methods_download(request: HttpRequest):
     buffer = io.BytesIO(content.encode("utf-8"))
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=f"{wallet.id}.txt")
+
+
+@login_required
+def avatar(request: HttpRequest):
+    BASE_AVATARS_DIR = settings.MEDIA_ROOT / "avatar"
+    filename = request.GET.get('file', '')
+
+    if not filename:
+        return HttpResponseForbidden("No file specified")
+
+     # VULNERABLE: strips '../' but only one pass, not recursive
+    sanitized = filename.replace('../', '')
+
+    file_path = os.path.join(BASE_AVATARS_DIR, sanitized)
+
+    try:
+        return FileResponse(open(file_path, 'rb'))
+    except FileNotFoundError:
+        return HttpResponse("File not found", status=404)
+    except PermissionError:
+        return HttpResponse("Permission denied", status=403)
