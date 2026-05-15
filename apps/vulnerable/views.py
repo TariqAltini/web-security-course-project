@@ -46,7 +46,9 @@ def logout_view(request: HttpRequest):
 
 def product_details(request: HttpRequest, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, "vulnerable/product.html", context={"product": product})
+    product.image.path
+    context={"product": product, "product_image_name": product.image.path}
+    return render(request, "vulnerable/product.html", context)
 
 
 @login_required(login_url=LOGIN_URL)
@@ -265,3 +267,21 @@ def avatar(request: HttpRequest):
         return HttpResponse("File not found", status=404)
     except PermissionError:
         return HttpResponse("Permission denied", status=403)
+    
+
+def product_image(request: HttpRequest):
+    BASE_IMG_DIR = settings.MEDIA_ROOT / "product-image"
+    filename = request.GET.get("file", "")
+
+    if not filename:
+        return HttpResponseForbidden("No file specified")
+    
+    try:
+        # VULN: path traversal, only checks the start of the path
+        # and doesnt check for traversal sequences 
+        if filename.startswith(str(BASE_IMG_DIR)):
+            return FileResponse(open(filename, 'rb'))
+        else:
+            return HttpResponseNotFound("File not found")
+    except:
+        return HttpResponseNotFound("File not found")

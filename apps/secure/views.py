@@ -42,7 +42,8 @@ def logout_view(request: HttpRequest):
 
 def product_details(request: HttpRequest, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, "secure/product.html", context={"product": product})
+    context={"product": product, "product_image_name": product.image.path}
+    return render(request, "secure/product.html", context)
 
 
 @login_required(login_url=LOGIN_URL)
@@ -239,6 +240,30 @@ def avatar(request: HttpRequest):
 
     # Ensure the resolved path is still within the base directory
     if not requested_path.is_relative_to(BASE_AVATARS_DIR):
+        return HttpResponseForbidden("Access denied")
+
+    # Check the file exists and is a file (not a directory or symlink)
+    if not requested_path.is_file() or requested_path.is_symlink():
+        return HttpResponseNotFound("File not found")
+
+    return FileResponse(open(requested_path, 'rb'))
+
+
+def product_image(request: HttpRequest):
+    BASE_IMG_DIR = settings.MEDIA_ROOT / "product-image"
+    filename = request.GET.get("file", "")
+
+    if not filename:
+        return HttpResponseForbidden("No file specified")
+    
+    # Resolve the full path and check it's within the base directory
+    try:
+        requested_path = (BASE_IMG_DIR / filename).resolve()
+    except Exception:
+        return HttpResponseForbidden("Invalid file path")
+
+    # Ensure the resolved path is still within the base directory
+    if not requested_path.is_relative_to(BASE_IMG_DIR):
         return HttpResponseForbidden("Access denied")
 
     # Check the file exists and is a file (not a directory or symlink)
