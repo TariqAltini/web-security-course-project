@@ -44,17 +44,14 @@
         <td class="user-role-cell">{% if user.role == 1 %}Admin{% else %}User{% endif %}</td>
         <td class="user-controls">
           <form action="{% url 'vulnerable:upgrade_user' %}" method="post" class="upgrade-form">
-            {% csrf_token %}
             <input type="hidden" name="username" value="{{user.username}}">
             <button type="submit">Upgrade user</button>
           </form>
           <form action="{% url 'vulnerable:downgrade_user' %}" method="post" class="downgrade-form">
-            {% csrf_token %}
             <input type="hidden" name="username" value="{{user.username}}">
             <button type="submit">Downgrade user</button>
           </form>
           <form action="{% url 'vulnerable:referer_delete_user' %}" method="get" class="delete-user-form">
-            {% csrf_token %}
             <input type="hidden" name="username" value="{{user.username}}">
             <button type="submit">Delete User</button>
           </form>

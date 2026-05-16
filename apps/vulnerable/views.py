@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, FileResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.db import transaction
 from django.urls import reverse
@@ -99,22 +100,23 @@ def admin_panel(request: HttpRequest):
     
     return redirect("vulnerable:index")
 
-
+@csrf_exempt
 @login_required(login_url=LOGIN_URL)
 @require_POST
 def upgrade_user(request: HttpRequest):
-    target_url = request.META.get('HTTP_X_ORIGINAL_URL', request.path)
-    
+    target_url = request.META.get('HTTP_X_ORIGINAL_URL', "")
+    user = ShopUser.objects.get(username = request.user.username)
+
     # check user role for security
-    if request.user.role == 1 or "upgrade-user/" in target_url:
-        user_to_change = ShopUser.objects.get(username=request.POST.get("username"))
+    if user.role == 1 or "upgrade-user/" in target_url:
+        user_to_change = ShopUser.objects.get(username=request.POST.get("username", "").strip())
         user_to_change.role = 1
         user_to_change.save()
-        return redirect("vulnerable:admin_panel")
+        return HttpResponse(f"upgraded user: {user_to_change}")
     
-    return redirect("vulnerable:index")
+    return HttpResponseForbidden("Not allowed")
 
-
+@csrf_exempt
 @login_required(login_url=LOGIN_URL)
 @require_POST
 def downgrade_user(request: HttpRequest):
