@@ -106,19 +106,31 @@ def admin_panel(request: HttpRequest):
 
 @csrf_exempt
 @login_required(login_url=LOGIN_URL)
-@require_POST
 def upgrade_user(request: HttpRequest):
-    target_url = request.META.get('HTTP_X_ORIGINAL_URL', "")
-    user = ShopUser.objects.get(username = request.user.username)
+    if request.method == "POST":
+        target_url = request.META.get('HTTP_X_ORIGINAL_URL', "")
+        user = ShopUser.objects.get(username = request.user.username)
 
-    # check user role for security
-    if user.role == 1 or "upgrade-user/" in target_url:
-        user_to_change = ShopUser.objects.get(username=request.POST.get("username", "").strip())
+        # check user role for security
+        if user.role == 1 or "upgrade-user/" in target_url:
+            user_to_change = ShopUser.objects.get(username=request.POST.get("username", "").strip())
+            user_to_change.role = 1
+            user_to_change.save()
+            return HttpResponse(f"upgraded user: {user_to_change}")
+        
+        return HttpResponseForbidden("Not allowed")
+    
+    elif request.method == "GET":
+        username = request.GET.get("username", "").strip()
+        if not username:
+            return HttpResponse("Missing username")
+        
+        user_to_change = ShopUser.objects.get(username=username)
         user_to_change.role = 1
         user_to_change.save()
         return HttpResponse(f"upgraded user: {user_to_change}")
-    
-    return HttpResponseForbidden("Not allowed")
+
+
 
 @csrf_exempt
 @login_required(login_url=LOGIN_URL)
