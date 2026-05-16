@@ -3,11 +3,13 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, FileResponse, Http404, HttpResponseForbidden, HttpResponseNotFound
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.db import transaction
 import io
 from django.conf import settings
 from pathlib import Path
+import time
 
 from .models import Product, CartItems, ShopUser, Wallet
 
@@ -104,17 +106,48 @@ def upgrade_user(request: HttpRequest):
     return redirect("secure:index")
 
 
+@csrf_exempt
 @login_required(login_url=LOGIN_URL)
 @require_POST
 def downgrade_user(request: HttpRequest):
-    # check user role for security
-    if request.user.role == 1:
-        user_to_change = ShopUser.objects.get(username=request.POST.get("username"))
+
+    is_confirm = request.POST.get("confirm", "")
+    user_to_downgrade = ShopUser.objects.get(username=request.POST.get("username").strip())
+
+    # first step
+    if not is_confirm:
+        user = ShopUser.objects.get(username=request.user.username)
+        if user.role != 1:
+            return HttpResponseForbidden("Not allowed")
+
+        request.session["user_to_downgrade"] = user_to_downgrade.username
+        request.session["downgrade_timestamp"] = int(time.time())
+
+        return render(request, "secure/confirm-downgrade.html", {"user_to_downgrade": user_to_downgrade})
+    # second step
+    else:
+        #Check for admin privileges
+        user = ShopUser.objects.get(username=request.user.username)
+        if user.role != 1:
+            return HttpResponseForbidden("Not allowed")
+
+        # Check for first step if it was performed
+        if user_to_downgrade.username != request.session.get("user_to_downgrade", ""):
+            return HttpResponseNotFound("Not found")
+        
+        if int(time.time()) - request.session.get("downgrade_timestamp", 0) > 300:
+            del request.session["downgrade_timestamp"]
+            del request.session["user_to_downgrade"]
+            return HttpResponseNotFound("Not found.")        
+
+        user_to_change = user_to_downgrade
         user_to_change.role = 2
         user_to_change.save()
+        
+        del request.session["downgrade_timestamp"]
+        del request.session["user_to_downgrade"]
+
         return redirect("secure:admin_panel")
-    
-    return redirect("secure:index")
 
 
 @login_required(login_url=LOGIN_URL)

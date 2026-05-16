@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAISON — Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="navbar__logo">
+      <span class="logo-text">MAISON</span>
+    </div>
+    <nav class="navbar__links">
+      <a href="{% url 'secure:index' %}" class="nav-link">SHOP</a>
+      <a href="{% url 'secure:cart' %}" class="nav-link">CART <span class="cart-count">0</span></a>
+      <a href="{% url 'secure:account' %}?id={{ request.user.username }}" class="nav-link">ACCOUNT</a>
+      <a href="{% url 'secure:payment_methods' %}" class="nav-link">PAYMENT</a>
+      <a href="{% url 'secure:admin_panel' %}" class="nav-link nav-link--admin">ADMIN</a>
+      <!-- Admin link-->
+      <!-- <a href="{% url 'secure:secret_admin_panel' %}" class="nav-link nav-link--admin">ADMIN</a> -->
+      <a href="{% url 'secure:login' %}" class="nav-link">LOGIN</a>
+    </nav>
+    <button class="navbar__mobile-toggle" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <p>New Collection — Spring / Summer 2026</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="confirm-downgrade-content">
+
+    <div class="confirm-card">
+        <p class="confirm-dialogue">Are you sure you want to downgrade {{ user_to_downgrade }}?</p>
+        <form action="POST" method="{% url 'secure:downgrade_user' %}">
+            <input type="hidden" name="username" value="{{ user_to_downgrade }}">
+            <input type="hidden" name="confirm" value="true">
+            <button type="submit">Confirm Downgrade</button>
+        </form>
+    </div>
+    
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span class="toast-msg">Added to cart!</span>
+  </div>
+
+  <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>

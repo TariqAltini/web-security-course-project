@@ -11,6 +11,7 @@ import io, os
 from django.conf import settings
 from pathlib import Path
 from decimal import Decimal
+import time
 
 from .models import Product, CartItems, ShopUser, Wallet
 from .helpers import authenticate
@@ -136,14 +137,34 @@ def upgrade_user(request: HttpRequest):
 @login_required(login_url=LOGIN_URL)
 @require_POST
 def downgrade_user(request: HttpRequest):
-    # check user role for security
-    if request.user.role == 1:
-        user_to_change = ShopUser.objects.get(username=request.POST.get("username"))
+
+    is_confirm = request.POST.get("confirm", "")
+    user_to_downgrade = ShopUser.objects.get(username=request.POST.get("username").strip())
+
+    # first step
+    if not is_confirm:
+        user = ShopUser.objects.get(username=request.user.username)
+        if user.role != 1:
+            return HttpResponseForbidden("Not allowed")
+
+        request.session["user_to_downgrade"] = user_to_downgrade.username
+        request.session["downgrade_timestamp"] = int(time.time())
+
+        return render(request, "vulnerable/confirm-downgrade.html", {"user_to_downgrade": user_to_downgrade})
+    # second step
+    else:       
+        # VULNERABLE: Forgets to check privileges on second step
+        user_to_change = user_to_downgrade
         user_to_change.role = 2
         user_to_change.save()
-        return redirect("vulnerable:admin_panel")
-    
-    return redirect("vulnerable:index")
+        
+        try:
+            del request.session["downgrade_timestamp"]
+            del request.session["user_to_downgrade"]
+        except:
+            pass
+
+        return HttpResponse(f"{user_to_downgrade.username} was downgraded")
 
 
 @login_required(login_url=LOGIN_URL)
