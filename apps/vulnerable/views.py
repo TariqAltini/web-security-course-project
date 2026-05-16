@@ -285,3 +285,37 @@ def product_image(request: HttpRequest):
             return HttpResponseNotFound("File not found")
     except:
         return HttpResponseNotFound("File not found")
+    
+
+@login_required(login_url=LOGIN_URL)
+def secret_admin_panel(request: HttpRequest):
+    
+    context = {
+        "users": ShopUser.objects.all()
+    }
+    return render(request, "vulnerable/admin-panel.html", context)
+
+
+#Referer-based access control
+@login_required(login_url=LOGIN_URL)
+def referer_admin_action(request: HttpRequest):
+    
+    referer = request.META.get('HTTP_REFERER', '')
+    
+    if '/admin-panel' in referer:
+        username_to_delete = request.GET.get("username")
+        if username_to_delete:
+            ShopUser.objects.filter(username=username_to_delete).delete()
+            return HttpResponse(f"User {username_to_delete} deleted successfully.")
+            
+    return HttpResponseForbidden("Access Denied: Request did not come from the admin panel.")
+
+#URL-based access control can be circumvented
+@login_required(login_url=LOGIN_URL)
+def url_bypass_admin(request: HttpRequest):
+    target_url = request.META.get('HTTP_X_ORIGINAL_URL', request.path)
+    
+    if "url-bypass-admin" in target_url:
+        return HttpResponse("<h3>[Vulnerable] Welcome Admin! You bypassed the URL filter.</h3>")
+        
+    return HttpResponse("Access Denied by URL filter.")
