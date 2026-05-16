@@ -298,7 +298,7 @@ def secret_admin_panel(request: HttpRequest):
 
 #Referer-based access control
 @login_required(login_url=LOGIN_URL)
-def referer_admin_action(request: HttpRequest):
+def referer_delete_user(request: HttpRequest):
     
     referer = request.META.get('HTTP_REFERER', '')
     

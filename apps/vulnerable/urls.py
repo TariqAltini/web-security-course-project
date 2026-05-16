@@ -25,6 +25,6 @@ urlpatterns = [
     path("avatar/", views.avatar, name="avatar"),
     path("product-image/", views.product_image, name="product_image"),
     path("secret-admin-panel-xyz987/", views.secret_admin_panel, name="secret_admin_panel"),
-    path("referer-admin-action/", views.referer_admin_action, name="referer_admin_action"),
+    path("referer-delete-user/", views.referer_delete_user, name="referer_delete_user"),
     path("url-bypass-admin/", views.url_bypass_admin, name="url_bypass_admin"),
 ]

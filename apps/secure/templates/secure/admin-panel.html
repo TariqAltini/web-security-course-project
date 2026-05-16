@@ -53,6 +53,11 @@
             <input type="hidden" name="username" value="{{user.username}}">
             <button type="submit">Downgrade user</button>
           </form>
+          <form action="{% url 'secure:referer_delete_user' %}" method="get" class="delete-user-form">
+            {% csrf_token %}
+            <input type="hidden" name="username" value="{{user.username}}">
+            <button type="submit">Delete User</button>
+          </form>
         </td>
       </tr>
       {% endif %}
