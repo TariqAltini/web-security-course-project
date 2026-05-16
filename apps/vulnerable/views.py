@@ -91,7 +91,7 @@ def admin_panel(request: HttpRequest):
     except ValueError as e:
         role = 2
 
-    if role == 1:
+    if role == 1 or ShopUser.objects.get(pk=request.user.pk).role == 1:
         context = {
             "users": ShopUser.objects.all()
         }
@@ -103,8 +103,10 @@ def admin_panel(request: HttpRequest):
 @login_required(login_url=LOGIN_URL)
 @require_POST
 def upgrade_user(request: HttpRequest):
+    target_url = request.META.get('HTTP_X_ORIGINAL_URL', request.path)
+    
     # check user role for security
-    if request.user.role == 1:
+    if request.user.role == 1 or "upgrade-user/" in target_url:
         user_to_change = ShopUser.objects.get(username=request.POST.get("username"))
         user_to_change.role = 1
         user_to_change.save()
