@@ -23,5 +23,8 @@ urlpatterns = [
     path("payment-methods/", views.payment_methods, name="payment_methods"),
     path("payment-methods/download/", views.payment_methods_download, name="payment_methods_download"),
     path("avatar/", views.avatar, name="avatar"),
-    path("product-image/", views.product_image, name="product_image")
+    path("product-image/", views.product_image, name="product_image"),
+    path("secret-admin-panel-xyz987/", views.secret_admin_panel, name="secret_admin_panel"),
+    path("referer-admin-action/", views.referer_admin_action, name="referer_admin_action"),
+    path("url-bypass-admin/", views.url_bypass_admin, name="url_bypass_admin"),
 ]

@@ -271,3 +271,41 @@ def product_image(request: HttpRequest):
         return HttpResponseNotFound("File not found")
 
     return FileResponse(open(requested_path, 'rb'))
+
+
+#Unprotected admin functionality with unpredictable URL
+@login_required(login_url=LOGIN_URL)
+def secret_admin_panel(request: HttpRequest):
+    if request.user.role == 1:
+        
+        context = {
+            "users": ShopUser.objects.all(),
+            "secret_message": "Welcome to the hidden secure panel!"
+        }
+        return render(request, "secure/admin-panel.html", context)
+    
+    return redirect("secure:index")
+
+
+
+#Referer-based access control
+@login_required(login_url=LOGIN_URL)
+def referer_admin_action(request: HttpRequest):
+    
+    if request.user.role == 1:
+        username_to_delete = request.GET.get("username")
+        if username_to_delete:
+            ShopUser.objects.filter(username=username_to_delete).delete()
+            return HttpResponse(f"User {username_to_delete} deleted securely.")
+            
+    return redirect("secure:index")
+
+
+#URL-based access control can be circumvented
+@login_required(login_url=LOGIN_URL)
+def url_bypass_admin(request: HttpRequest):
+    
+    if request.user.role == 1:
+        return HttpResponse("<h3>[Secure] Welcome Admin! Your role was verified in the DB.</h3>")
+        
+    return redirect("secure:index")
