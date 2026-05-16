@@ -44,6 +44,7 @@ class CartItems(models.Model):
     user = models.ForeignKey(ShopUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     
     class Meta:
         app_label="vulnerable"

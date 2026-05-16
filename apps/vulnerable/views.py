@@ -10,6 +10,7 @@ from django.urls import reverse
 import io, os
 from django.conf import settings
 from pathlib import Path
+from decimal import Decimal
 
 from .models import Product, CartItems, ShopUser, Wallet
 from .helpers import authenticate
@@ -65,6 +66,8 @@ def add_to_cart(request: HttpRequest, product_id):
     # get parameters
     product = get_object_or_404(Product, id=product_id)
     quantity = int(request.POST.get("quantity", 1))
+    # VULNERABLE: Server trusts price sent by client
+    price = Decimal(request.POST.get("price", str(product.price)))
 
     # VULNERABILITY HERE: HIGH-LEVEL LOGIC VULNERABILITY
     # This is vulnerable due to not checking for quantity boundaries
@@ -73,9 +76,10 @@ def add_to_cart(request: HttpRequest, product_id):
     try:
         cart_item = CartItems.objects.get(user=request.user, product=product)
         cart_item.quantity += quantity
+        cart_item.price = price
         cart_item.save()
     except CartItems.DoesNotExist:
-        cart_item = CartItems(user=request.user, product=product, quantity=quantity)
+        cart_item = CartItems(user=request.user, product=product, quantity=quantity, price=price)
         cart_item.save()
         
     messages.success(request, "Product has been added to cart")
